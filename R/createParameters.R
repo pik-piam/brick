@@ -375,9 +375,9 @@ createParameters <- function(m, config, inputDir) {
   )
 
   # assumption: average life time of initial stock of building shells: 12 years
-  p_shareRenBSinit <- shareRen(ltBs, standingLifeTime = 12) %>%
-    select("region", "ttotIn", "ttotOut", "value") %>%
-    toModelResolution(m, unfilteredDims = c("ttotIn", "ttotOut"))
+  p_shareRenBSinit <- shareRen(ttot, ltBs, standingLifeTime = 27) %>%
+    select("region", "ttotIn", "ttot", "value") %>%
+    toModelResolution(m)
   p_shareRenBSinit <- m$addParameter(
     name = "p_shareRenBSinit",
     domain = c("region", "ttotIn", "ttotOut"),
