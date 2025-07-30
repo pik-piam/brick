@@ -10,9 +10,10 @@ periods: [1999, 2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009,
 startyear: 2000
 regionmapping: [regionmappingEUplus.csv, mredgebuildings]
 # EU27
-regions: ["AUT", "BEL", "BGR", "CYP", "CZE", "DEU", "DNK", "ESP", "EST", "FIN",
-          "FRA", "GRC", "HRV", "HUN", "IRL", "ITA", "LTU", "LUX", "LVA", "MLT",
-          "NLD", "POL", "PRT", "ROU", "SVK", "SVN", "SWE"]
+# regions: ["AUT", "BEL", "BGR", "CYP", "CZE", "DEU", "DNK", "ESP", "EST", "FIN",
+#           "FRA", "GRC", "HRV", "HUN", "IRL", "ITA", "LTU", "LUX", "LVA", "MLT",
+#           "NLD", "POL", "PRT", "ROU", "SVK", "SVN", "SWE"]
+regions: ["DEU", "ESP", "FRA", "ITA", "POL", "SWE"]
 #ltFactor: 1.5
 ltEternalShare: 0.05
 boilerBan: {stock: {h2bo: 0}, construction: {h2bo: 0, sobo: 0}, renovation: {h2bo: 0}}
