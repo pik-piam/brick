@@ -21,7 +21,13 @@ $endif.matching
 
 $ifthenE.calibration (sameas("%CALIBRATIONMETHOD%","optimization"))or(sameas("%CALIBRATIONMETHOD%","logit"))
 $gdxin input.gdx
-$load p_stockCalibTarget p_renovationCalibTarget p_constructionCalibTarget
+$load p_stockCalibTarget p_constructionCalibTarget
+$ifThen.sequentialRen "%SEQUENTIALREN%" == "TRUE"
+$load p_renovationBSCalibTarget p_renovationHSCalibTarget
+$else.sequentialRen
+$load p_specCostRen
+$load p_renovationCalibTarget
+$endIf.sequentialRen
 $gdxin
 $endif.calibration
 
@@ -83,10 +89,12 @@ p_feDemand(hs,bs,vin,reg,typ,ttot) =
 ;
 
 * renovation cost (hierarchical renovation)
+$ifThenE.noTotal (((not(sameas("%CALIBRATIONMETHOD%","logit")))and(not(sameas("%CALIBRATIONMETHOD%","optimization"))))or(sameas("%SEQUENTIALREN%","TRUE")))
 p_specCostRen(cost,state,bsr,hsr,vin,subs,ttot) =
     p_specCostRenBS(cost,state,bsr,vin,subs,ttot)
   + p_specCostRenHS(cost,state,hsr,vin,subs,ttot)
 ;
+$endIf.noTotal
 
 $ifThen.lowop "%CALIBRATIONLOWOP%" == "FALSE"
 * floor-space specific operation cost
