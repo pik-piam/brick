@@ -22,6 +22,7 @@
 #'         made in Gams code)
 #'   \item \code{"createInput"} to recreate the input data
 #'   \item \code{"createMatching"} to recreate the matching data
+#'   \item \code{"reweightMatching"} to use the run from which we restart as the starting point
 #'   \item \code{"useAsStart"} to use the run from which we restart as the starting point
 #'   \item \code{"none"} (or any other string) to do none of the above
 #'  }
@@ -97,7 +98,7 @@ initModel <- function(config = NULL,
       message("No restart options were specified. ",
               "Default options are applied: Copy Gams files, recreate input data, ",
               "recreate matching if applicable, and use output gdx as starting point if existent.")
-      restart <- c("copyGams", "createInput", "createMatching", "useAsStart")
+      restart <- c("copyGams", "createInput", "createMatching", "reweightMatching", "useAsStart")
     }
     write.csv2(data.frame(restart = restart), file.path(path, "config", "restartOptions.csv"))
 
