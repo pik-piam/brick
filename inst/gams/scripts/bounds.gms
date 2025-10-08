@@ -1,6 +1,6 @@
 *** fix variables for historic periods
 
-$ifthen.notMatching not "%RUNTYPE%" == "matching"
+$ifthenE.notMatching (sameas("%RUNTYPE%","scenario"))or(sameas("%RUNTYPE%","calibration"))
 
 v_stock.fx(qty,state,vin,subs,thist)$vinExists(thist,vin) = p_stockHist(qty,state,vin,subs,thist);
 v_construction.fx(qty,state,subs,thist)                                  = 0;
@@ -58,8 +58,15 @@ $endif.fixedBuildings
 *** renovation correction
 
 $ifthen.renCorrect "%RUNTYPE%" == "renCorrect"
-v_stock.fx(qty,bs,hs,vin,region,loc,typ,inc,tinit) = p_stock(qty,bs,hs,vin,region,loc,typ,inc,tinit);
+v_stock.fx(qty,bs,hs,vin,region,loc,typ,inc,thist) = p_stock(qty,bs,hs,vin,region,loc,typ,inc,thist);
 v_construction.fx(qty,bs,hs,region,loc,typ,inc,t) = p_construction(qty,bs,hs,region,loc,typ,inc,t);
+v_demolition.fx(qty,state,vin,subs,thist)$vinExists(thist,vin)           = 0;
+$ifthen.sequentialRen "%SEQUENTIALREN%" == "TRUE"
+v_renovationBS.fx(qty,state,bsr,vin,subs,thist)$vinExists(thist,vin) = 0;
+v_renovationHS.fx(qty,state,hsr,vin,subs,thist)$vinExists(thist,vin) = 0;
+$else.sequentialRen
+v_renovation.fx(qty,renAllowed,vin,subs,thist)$vinExists(thist,vin) = 0;
+$endif.sequentialRen
 $endif.renCorrect
 
 

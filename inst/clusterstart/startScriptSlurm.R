@@ -29,7 +29,7 @@ if (sys.nframe() == 0L) {
   # Should mredgebuildings be loaded? (required in matching run)
   loadMredgebuildings <- as.logical(argsCL[4])
   if (isTRUE(loadMredgebuildings)) {
-    library("mredgebuildings")
+    library("mredgebuildings") #nolint: undesirable_function_linter.
   }
 
   # Should the reporting be run?

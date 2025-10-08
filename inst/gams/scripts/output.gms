@@ -17,6 +17,12 @@ if(card(ErrStock) + card(ErrConstruction) + card(ErrRenovation) + card(ErrDemoli
   abort "Variable entries that should not exist are greater zero. abort.gdx written";
 );
 
+$ifThen.renCorrect "%RUNTYPE%" == "renCorrect"
+p_stockDiff("area",state,vin,subs,ttot) = v_stock.l("area",state,vin,subs,ttot) - p_stock("area",state,vin,subs,ttot);
+p_renovationHSDiff("area",renAllowedHS,vin,subs,t) =  v_renovationHS.l("area",renAllowedHS,vin,subs,t)
+                                                      - p_renovationHS("area",renAllowedHS,vin,subs,t);
+$endIf.renCorrect
+
 
 
 *** write results

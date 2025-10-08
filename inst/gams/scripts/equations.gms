@@ -980,7 +980,7 @@ q_renCorrectObj..
   )
   +
   sum((state,subs,t),
-    sqr(
+    p_dt(t) * sqr(
         v_construction("area",state,subs,t)
       - p_construction("area",state,subs,t)
     )
@@ -989,7 +989,7 @@ q_renCorrectObj..
 $ifthen.sequentialRen "%SEQUENTIALREN%" == "TRUE"
   sum((renAllowedBS(state,bsr),vin,subs,t)$(    not(sameas(bsr,"0"))
                                             and vinExists(t,vin)),
-    sqr(
+    p_dt(t) * sqr(
         v_renovationBS("area",renAllowedBS,vin,subs,t)
       - p_renovationBS("area",renAllowedBS,vin,subs,t)
     )
@@ -997,7 +997,7 @@ $ifthen.sequentialRen "%SEQUENTIALREN%" == "TRUE"
   +
   sum((renAllowedHS(state,hsr),vin,subs,t)$(    not(sameas(hsr,"0"))
                                             and vinExists(t,vin)),
-    sqr(
+    p_dt(t) * sqr(
         v_renovationHS("area",renAllowedHS,vin,subs,t)
       - p_renovationHS("area",renAllowedHS,vin,subs,t)
     )
@@ -1006,7 +1006,7 @@ $else.sequentialRen
   sum((ren(renAllowed(state,bsr,hsr)),vin,subs,t)$(not(    sameas(hsr,"0")
                                                        and sameas(bsr,"0"))
                                                    and vinExists(t,vin)),
-    sqr(
+    p_dt(t) * sqr(
         v_renovation("area",ren,vin,subs,t)
       - p_renovation("area",ren,vin,subs,t)
     )

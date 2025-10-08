@@ -91,8 +91,6 @@ startModel <- function(path, runReporting = TRUE) {
 
     if (cfg[["switches"]][["RUNTYPE"]] == "matching") {
       plotRefDeviation(path)
-      print(path)
-      print(normalizePath(path))
       plotMatchingComparison(normalizePath(path))
       plotSummary(path, c("loc", "typ"))
     }
