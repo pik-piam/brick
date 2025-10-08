@@ -270,5 +270,7 @@ p_renovationBS(qty,bs,hs,bsr,vin,region,loc,typ,inc,ttot)   "target flow of buil
 p_renovationHS(qty,bs,hs,hsr,vin,region,loc,typ,inc,ttot)   "target flow of heating system replacement and untouched buildings [million m2/yr]"
 p_construction(qty,bs,hs,region,loc,typ,inc,ttot)           "target flow of new buildings [million m2/yr]"
 p_stock(qty, bs, hs, vin, region, loc, typ, inc, ttot)      "target stock of buildings [million m2]"
+p_renovationHSDiff(qty,bs,hs,hsr,vin,region,loc,typ,inc,ttot)   "difference of heating system replacement and untouched buildings [million m2/yr]"
+p_stockDiff(qty, bs, hs, vin, region, loc, typ, inc, ttot)      "difference in stock of buildings [million m2]"
 ;
 $endif.renCorrect

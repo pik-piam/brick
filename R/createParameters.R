@@ -547,14 +547,6 @@ createParameters <- function(m, config, inputDir) {
     ))
   }
 
-  if (identical(config[["switches"]][["RUNTYPE"]], "calibration")) {
-    invisible(m$addSet(
-      "tcalib",
-      records = periodFromConfig(config, "tcalib"),
-      description = "time steps considered by the calibration when minimising deviation from target trajectories"
-    ))
-  }
-
 
   ## discrete choice calibration =====
 

@@ -35,7 +35,7 @@ periodFromConfig <- function(config, periodType) {
     thist = setdiff(ttot, t),
     tinit = min(ttot),
     t0 = min(t),
-    tcalib = calibperiods,
+    tcalib = calibperiods[which(calibperiods >= startyear)],
     stop("unknown type of period: ", periodType)
   )
 }

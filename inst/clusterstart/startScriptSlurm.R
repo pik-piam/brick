@@ -26,8 +26,14 @@ if (sys.nframe() == 0L) {
     message(paste("This is a development run. Loading brick from local folder", brickDir))
   }
 
+  # Should mredgebuildings be loaded? (required in matching run)
+  loadMredgebuildings <- as.logical(argsCL[4])
+  if (isTRUE(loadMredgebuildings)) {
+    library("mredgebuildings") #nolint: undesirable_function_linter.
+  }
+
   # Should the reporting be run?
-  runReporting <- as.logical(argsCL[4])
+  runReporting <- as.logical(argsCL[5])
 
   brick::startModel(path, runReporting = runReporting)
 }

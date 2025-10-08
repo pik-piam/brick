@@ -184,6 +184,7 @@ initModel <- function(config = NULL,
     isDev <- as.character(is_dev_package("brick"))
     slurmScriptPath <- brick.file("clusterstart", "startScriptSlurm.R")
     logFilePath <- file.path(path, "log.txt")
+    loadMredgebuildings <- as.character(cfg[["switches"]][["RUNTYPE"]] == "matching")
 
     exitCode <- system(paste0("sbatch --job-name=",
                               title,
@@ -191,7 +192,8 @@ initModel <- function(config = NULL,
                               " --mail-type=END,FAIL",
                               " --comment=BRICK",
                               " --wrap=\"",
-                              paste("Rscript", slurmScriptPath, path, brickDir, isDev, runReporting),
+                              paste("Rscript", slurmScriptPath, path, brickDir, isDev,
+                                    loadMredgebuildings, runReporting),
                               "\" ",
                               slurmConfig))
     Sys.sleep(1)

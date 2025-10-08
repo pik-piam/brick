@@ -47,11 +47,12 @@ createCalibrationTarget <- function(path,
   # build mapping between matching and calibration periods
   .buildPeriodMap <- function(cfgCalib, cfgMatching) {
     periods <- cfgCalib$calibperiods
+    startyear <- cfgCalib$startyear
 
     dt <- data.frame(ttotAgg = periods, dt = c(NA, diff(periods)))
 
     periodMap <- dt %>%
-      filter(!is.na(.data$dt)) %>%
+      filter(!is.na(.data$dt), .data$ttotAgg >= startyear) %>%
       group_by(.data$ttotAgg) %>%
       reframe(ttot = seq(to = .data$ttotAgg, length.out = .data$dt))
 
@@ -207,6 +208,7 @@ createCalibrationTarget <- function(path,
   cfgCalib[["switches"]][["CALIBRATIONMETHOD"]] <- NULL
   cfgCalib[["title"]] <- paste(basename(path), "for", basename(calibConfig), sep = "_")
   cfgCalib[["matchingRun"]] <- normalizePath(path)
+  cfgCalib[["periods"]] <- cfgCalib$calibperiods
 
   runPath <- initModel(config = cfgCalib,
                        outputFolder = outputFolder,

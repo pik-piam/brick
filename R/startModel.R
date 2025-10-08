@@ -41,7 +41,8 @@ startModel <- function(path, runReporting = TRUE) {
     }
   }
 
-  if ("reweightMatching" %in% restart) {
+  if (cfg[["switches"]][["RUNTYPE"]] == "matching" &&
+        "reweightMatching" %in% restart) {
     reweightMatchingReferences(path)
   }
 
@@ -57,7 +58,7 @@ startModel <- function(path, runReporting = TRUE) {
   if (cfg[["switches"]][["RUNTYPE"]] == "calibration") {
     runCalibration(path,
                    parameters = cfg[["calibrationParameters"]],
-                   tcalib = cfg[["calibperiods"]],
+                   tcalib = periodFromConfig(cfg, "tcalib"),
                    gamsOptions = cfg[["gamsOptions"]],
                    switches = c(cfg[["switches"]],
                                 cfg[c("solverLP", "solverNLP", "solverQCP", "ignoreShell")]),
@@ -90,7 +91,7 @@ startModel <- function(path, runReporting = TRUE) {
 
     if (cfg[["switches"]][["RUNTYPE"]] == "matching") {
       plotRefDeviation(path)
-      plotMatchingComparison(path)
+      plotMatchingComparison(normalizePath(path))
       plotSummary(path, c("loc", "typ"))
     }
 
