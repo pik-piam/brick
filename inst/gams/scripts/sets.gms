@@ -36,7 +36,7 @@ cost "type of cost"
   tangible   "tangible cost (exogenous)"
   intangible "intangible cost (identified in calibration)"
   /
-var "mayor variables of the model"
+var "major variables of the model"
   / stock, construction, renovation, renovationBS, renovationHS, demolition /
 varFlow(var) "flow variables of the model"
   / construction, renovation, renovationBS, renovationHS, demolition /
