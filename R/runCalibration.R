@@ -688,6 +688,7 @@ runCalibrationOptim <- function(path,
 #' @param renAllowed data frame with allowed renovation transitions
 #'
 #' @returns data frame of desired dimension with x = 0 (column to contain the optimzation variable)
+#'   and xA = 0.
 #'
 #' @importFrom dplyr %>% .data filter mutate right_join
 #'
@@ -695,7 +696,7 @@ runCalibrationOptim <- function(path,
   do.call(expandSets, c(as.list(dims), .m = mInput)) %>%
     filter(.data[["ttot"]] %in% tcalib) %>%
     .filter(renAllowed) %>%
-    mutate(x = 0)
+    mutate(x = 0, xA = 0)
 }
 
 #' Initialize the data frame for the objective function value

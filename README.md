@@ -58,5 +58,7 @@ A BibTeX entry for LaTeX users is
   author = {Robin Hasse and Ricarda Rosemann},
   date = {2025-10-15},
   year = {2025},
+  url = {https://github.com/pik-piam/brick},
+  note = {Version: 0.10.9},
 }
 ```
