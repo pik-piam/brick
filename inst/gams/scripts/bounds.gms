@@ -29,12 +29,12 @@ $endif.notMatching
 $ifthenE.calibration (sameas("%CALIBRATIONMETHOD%","optimization"))or(sameas("%CALIBRATIONMETHOD%","logit"))
 v_stock.fx(qty,state,vin,subs,thist)$vinExists(thist,vin) = p_stockCalibTarget(qty,state,vin,subs,thist);
 v_construction.fx(qty,bs,hs,region,loc,typ,inc,thist) = p_constructionCalibTarget(qty,bs,hs,region,loc,typ,inc,thist);
-v_demolition.fx(qty,state,vin,subs,thist) = p_demolitionCalibTarget(qty,state,vin,subs,thist);
+v_demolition.fx(qty,state,vin,subs,thist)$vinExists(thist,vin) = p_demolitionCalibTarget(qty,state,vin,subs,thist);
 $ifthen.sequentialRen "%SEQUENTIALREN%" == "TRUE"
-v_renovationBS.fx(qty,state,bsr,vin,subs,thist) = p_renovationBSCalibTarget(qty,state,bsr,vin,subs,thist);
-v_renovationHS.fx(qty,state,hsr,vin,subs,thist) = p_renovationHSCalibTarget(qty,state,hsr,vin,subs,thist);
+v_renovationBS.fx(qty,state,bsr,vin,subs,thist)$vinExists(thist,vin) = p_renovationBSCalibTarget(qty,state,bsr,vin,subs,thist);
+v_renovationHS.fx(qty,state,hsr,vin,subs,thist)$vinExists(thist,vin) = p_renovationHSCalibTarget(qty,state,hsr,vin,subs,thist);
 $else.sequentialRen
-v_renovation.fx(qty,renAllowed,vin,subs,thist) = p_renovationCalibTarget(qty,renAllowed,vin,subs,thist);
+v_renovation.fx(qty,renAllowed,vin,subs,thist)$vinExists(thist,vin) = p_renovationCalibTarget(qty,renAllowed,vin,subs,thist);
 $endif.sequentialRen
 $endif.calibration
 
@@ -59,21 +59,21 @@ v_stock.fx(qty,bs,hs,vin,region,loc,typ,inc,t)$(hsBan("stock",region,t,hs) and v
 
 $ifthen.fixedBuildings "%FIXEDBUILDINGS%" == "TRUE"
 v_construction.fx(qty,bs,hs,region,loc,typ,inc,ttot) = 0;
-v_demolition.fx(qty,bs,hs,vin,region,loc,typ,inc,ttot) = 0;
+v_demolition.fx(qty,bs,hs,vin,region,loc,typ,inc,ttot)$vinExists(ttot,vin) = 0;
 $endif.fixedBuildings
 
 
 *** renovation correction
 
 $ifthen.renCorrect "%RUNTYPE%" == "renCorrect"
-v_stock.fx(qty,bs,hs,vin,region,loc,typ,inc,thist) = p_stock(qty,bs,hs,vin,region,loc,typ,inc,thist);
+v_stock.fx(qty,bs,hs,vin,region,loc,typ,inc,thist)$vinExists(thist,vin) = p_stock(qty,bs,hs,vin,region,loc,typ,inc,thist);
 v_construction.fx(qty,bs,hs,region,loc,typ,inc,thist) = p_construction(qty,bs,hs,region,loc,typ,inc,thist);
-v_demolition.fx(qty,state,vin,subs,thist) = p_demolition(qty,state,vin,subs,thist);
+v_demolition.fx(qty,state,vin,subs,thist)$vinExists(thist,vin) = p_demolition(qty,state,vin,subs,thist);
 $ifthen.sequentialRen "%SEQUENTIALREN%" == "TRUE"
-v_renovationBS.fx(qty,state,bsr,vin,subs,thist) = p_renovationBS(qty,state,bsr,vin,subs,thist);
-v_renovationHS.fx(qty,state,hsr,vin,subs,thist) = p_renovationHS(qty,state,hsr,vin,subs,thist);
+v_renovationBS.fx(qty,state,bsr,vin,subs,thist)$vinExists(thist,vin) = p_renovationBS(qty,state,bsr,vin,subs,thist);
+v_renovationHS.fx(qty,state,hsr,vin,subs,thist)$vinExists(thist,vin) = p_renovationHS(qty,state,hsr,vin,subs,thist);
 $else.sequentialRen
-v_renovation.fx(qty,renAllowed,vin,subs,thist) = p_renovation(qty,renAllowed,vin,subs,thist);
+v_renovation.fx(qty,renAllowed,vin,subs,thist)$vinExists(thist,vin) = p_renovation(qty,renAllowed,vin,subs,thist);
 $endif.sequentialRen
 $endif.renCorrect
 

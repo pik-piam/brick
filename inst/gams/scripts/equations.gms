@@ -234,7 +234,7 @@ $else.sequentialRen
       - 1
     )
   )
-  - 
+  -
   v_entropyRenToBS(state,vin,subs,t) !! removes heterogeneity in bsr AND (when summed) state
 $endif.sequentialRen
 ;
@@ -513,7 +513,7 @@ q_lifeTimeBS(q,bs,vin,subs(reg,loc,typ,inc),ttot)$(    vinExists(ttot,vin)
       sum(hs,
         v_construction(q,bs,hs,subs,ttotIn)
       ) * p_dtVin(ttotIn,vin)
-      + 
+      +
       sum(renAllowedBS(state,bs),
         v_renovationBS(q,state,bs,vin,subs,ttotIn) * p_dt(ttotIn)
       )
@@ -662,23 +662,23 @@ q_dwelSizeConstruction(subs,ttot)..
 ;
 
 q_dwelSizeRenovationBS(vin,subs,ttot)$vinExists(ttot,vin)..
-  sum(renAllowedBS(state,bsr)$(not sameas(bsr,"0")), 
+  sum(renAllowedBS(state,bsr)$(not sameas(bsr,"0")),
     v_renovationBS("area",renAllowedBS,vin,subs,ttot)
   )
   =e=
   v_dwelSizeRenovationBS(vin,subs,ttot)
-  * sum(renAllowedBS(state,bsr)$(not sameas(bsr,"0")), 
+  * sum(renAllowedBS(state,bsr)$(not sameas(bsr,"0")),
     v_renovationBS("num",renAllowedBS,vin,subs,ttot)
   )
 ;
 
 q_dwelSizeRenovationHS(vin,subs,ttot)$vinExists(ttot,vin)..
-  sum(renAllowedHS(state,hsr)$(not sameas(hsr,"0")), 
+  sum(renAllowedHS(state,hsr)$(not sameas(hsr,"0")),
     v_renovationHS("area",renAllowedHS,vin,subs,ttot)
   )
   =e=
   v_dwelSizeRenovationHS(vin,subs,ttot)
-  * sum(renAllowedHS(state,hsr)$(not sameas(hsr,"0")), 
+  * sum(renAllowedHS(state,hsr)$(not sameas(hsr,"0")),
     v_renovationHS("num",renAllowedHS,vin,subs,ttot)
   )
 ;
@@ -973,44 +973,65 @@ q_renCorrectObj..
   v_renCorrectObj
   =e=
   sum((state,vin,subs,t)$vinExists(t,vin),
-    sqr(
-        v_stock("area",state,vin,subs,t)
-      - p_stock("area",state,vin,subs,t)
-    )
+    sqr(v_stockDiff("area",state,vin,subs,t))
   )
   +
   sum((state,subs,t),
-    p_dt(t) * sqr(
-        v_construction("area",state,subs,t)
-      - p_construction("area",state,subs,t)
-    )
+    p_dt(t) * sqr(v_constructionDiff("area",state,subs,t))
   )
   +
 $ifthen.sequentialRen "%SEQUENTIALREN%" == "TRUE"
   sum((renAllowedBS(state,bsr),vin,subs,t)$(    not(sameas(bsr,"0"))
                                             and vinExists(t,vin)),
-    p_dt(t) * sqr(
-        v_renovationBS("area",renAllowedBS,vin,subs,t)
-      - p_renovationBS("area",renAllowedBS,vin,subs,t)
-    )
+    p_dt(t) * sqr(v_renovationBSDiff("area",renAllowedBS,vin,subs,t))
   )
   +
   sum((renAllowedHS(state,hsr),vin,subs,t)$(    not(sameas(hsr,"0"))
                                             and vinExists(t,vin)),
-    p_dt(t) * sqr(
-        v_renovationHS("area",renAllowedHS,vin,subs,t)
-      - p_renovationHS("area",renAllowedHS,vin,subs,t)
-    )
+    p_dt(t) * sqr(v_renovationHSDiff("area",renAllowedHS,vin,subs,t))
   )
 $else.sequentialRen
   sum((ren(renAllowed(state,bsr,hsr)),vin,subs,t)$(not(    sameas(hsr,"0")
                                                        and sameas(bsr,"0"))
                                                    and vinExists(t,vin)),
-    p_dt(t) * sqr(
-        v_renovation("area",ren,vin,subs,t)
-      - p_renovation("area",ren,vin,subs,t)
-    )
+    p_dt(t) * sqr(v_renovationDiff("area",ren,vin,subs,t))
   )
-;
 $endif.sequentialRen
+;
+
+q_stockDiff(q,state,vin,subs,t)..
+  v_stockDiff(q,state,vin,subs,t)
+  =e=
+  v_stock(q,state,vin,subs,t) - p_stock(q,state,vin,subs,t)
+;
+
+q_constructionDiff(q,state,subs,t)..
+  v_constructionDiff(q,state,subs,t)
+  =e=
+  v_construction(q,state,subs,t) - p_construction(q,state,subs,t)
+;
+
+q_demolitionDiff(q,state,vin,subs,t)..
+  v_demolitionDiff(q,state,vin,subs,t)
+  =e=
+  v_demolition(q,state,vin,subs,t) - p_demolition(q,state,vin,subs,t)
+;
+$ifThen.sequentialRen "%SEQUENTIALREN%" == "TRUE"
+q_renovationBSDiff(q,renAllowedBS,vin,subs,t)..
+  v_renovationBSDiff(q,renAllowedBS,vin,subs,t)
+  =e=
+  v_renovationBS(q,renAllowedBS,vin,subs,t) - p_renovationBS(q,renAllowedBS,vin,subs,t)
+;
+q_renovationHSDiff(q,renAllowedHS,vin,subs,t)..
+  v_renovationHSDiff(q,renAllowedHS,vin,subs,t)
+  =e=
+  v_renovationHS(q,renAllowedHS,vin,subs,t) - p_renovationHS(q,renAllowedHS,vin,subs,t)
+;
+$else.sequentialRen
+q_renovationDiff(q,renAllowed,vin,subs,t)..
+  v_renovationDiff(q,renAllowed,vin,subs,t)
+  =e=
+  v_renovation(q,renAllowed,vin,subs,t) - p_renovation(q,renAllowed,vin,subs,t)
+;
+$endIf.sequentialRen
 $endIf.renCorrect

@@ -134,11 +134,17 @@ $ifthen.renCorrect "%RUNTYPE%" == "renCorrect"
 model renCorrect "Find renovation flows that best matches other run"
   /
   q_renCorrectObj
+  q_stockDiff
+  q_constructionDiff
+  q_demolitionDiff
 $ifthen.sequentialRen "%SEQUENTIALREN%" == "TRUE"
+  q_renovationBSDiff
+  q_renovationHSDiff
   q_stockBal1
   q_stockBal2
   q_stockBal3
 $else.sequentialRen
+  q_renovationDiff
   q_stockBalNext
   q_stockBalPrev
   q_renovationBS

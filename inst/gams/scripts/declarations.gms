@@ -113,7 +113,13 @@ v_conCost(region,loc,typ,inc,ttot) "construction cost cash flow in USD/yr"
 v_renCost(region,loc,typ,inc,ttot) "renovation cost cash flow in USD/yr"
 
 $ifthen.renCorrect "%RUNTYPE%" == "renCorrect"
-v_renCorrectObj "correction objective: renovation deviation"
+v_renCorrectObj                                                 "correction objective: renovation deviation"
+v_renovationDiff(qty,bs,hs,bsr,hsr,vin,region,loc,typ,inc,ttot) "difference of renovated and untouched buildings [million m2/yr]"
+v_renovationBSDiff(qty,bs,hs,bsr,vin,region,loc,typ,inc,ttot)   "difference of building shell retrofitted and untouched buildings [million m2/yr]"
+v_renovationHSDiff(qty,bs,hs,hsr,vin,region,loc,typ,inc,ttot)   "difference of heating system replacement and untouched buildings [million m2/yr]"
+v_constructionDiff(qty,bs,hs,region,loc,typ,inc,ttot)           "difference of new buildings [million m2/yr]"
+v_demolitionDiff(qty,bs,hs,vin,region,loc,typ,inc,ttot)         "difference of demolished buildings [million m2/yr]"
+v_stockDiff(qty, bs, hs, vin, region, loc, typ, inc, ttot)      "difference in stock of buildings [million m2]"
 $endif.renCorrect
 ;
 
@@ -153,6 +159,13 @@ q_demCost(region,loc,typ,inc,ttot) "demolition cost"
 
 q_renovationBS(qty,bs,hs,bsr,vin,region,loc,typ,inc,ttot) "aggregate renovation to building shell retrofit"
 q_renovationHS(qty,bs,hs,hsr,vin,region,loc,typ,inc,ttot) "aggregate renovation to heating system replacement"
+
+q_renovationDiff(qty,bs,hs,bsr,hsr,vin,region,loc,typ,inc,ttot) "difference of renovated and untouched buildings [million m2/yr]"
+q_renovationBSDiff(qty,bs,hs,bsr,vin,region,loc,typ,inc,ttot)   "difference of building shell retrofitted and untouched buildings [million m2/yr]"
+q_renovationHSDiff(qty,bs,hs,hsr,vin,region,loc,typ,inc,ttot)   "difference of heating system replacement and untouched buildings [million m2/yr]"
+q_constructionDiff(qty,bs,hs,region,loc,typ,inc,ttot)           "difference of new buildings [million m2/yr]"
+q_demolitionDiff(qty,bs,hs,vin,region,loc,typ,inc,ttot)         "difference of demolished buildings [million m2/yr]"
+q_stockDiff(qty, bs, hs, vin, region, loc, typ, inc, ttot)      "difference in stock of buildings [million m2]"
 
 q_sysHeteroPref(region,loc,typ,inc,ttot)              "system-wide heterogeneity preference"
 q_heteroPrefCon(region,loc,typ,inc,ttot)              "diversity preference for construction"
@@ -272,11 +285,5 @@ p_renovationHS(qty,bs,hs,hsr,vin,region,loc,typ,inc,ttot)   "target flow of heat
 p_construction(qty,bs,hs,region,loc,typ,inc,ttot)           "target flow of new buildings [million m2/yr]"
 p_demolition(qty,bs,hs,vin,region,loc,typ,inc,ttot)         "target flow of demolished buildings [million m2/yr]"
 p_stock(qty, bs, hs, vin, region, loc, typ, inc, ttot)      "target stock of buildings [million m2]"
-p_renovationDiff(qty,bs,hs,bsr,hsr,vin,region,loc,typ,inc,ttot) "difference of renovated and untouched buildings [million m2/yr]"
-p_renovationBSDiff(qty,bs,hs,bsr,vin,region,loc,typ,inc,ttot)   "difference of building shell retrofitted and untouched buildings [million m2/yr]"
-p_renovationHSDiff(qty,bs,hs,hsr,vin,region,loc,typ,inc,ttot)   "difference of heating system replacement and untouched buildings [million m2/yr]"
-p_constructionDiff(qty,bs,hs,region,loc,typ,inc,ttot)           "difference of new buildings [million m2/yr]"
-p_demolitionDiff(qty,bs,hs,vin,region,loc,typ,inc,ttot)         "difference of demolished buildings [million m2/yr]"
-p_stockDiff(qty, bs, hs, vin, region, loc, typ, inc, ttot)      "difference in stock of buildings [million m2]"
 ;
 $endif.renCorrect
