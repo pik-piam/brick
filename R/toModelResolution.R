@@ -13,10 +13,11 @@
 #' @author Robin Hasse
 #'
 #' @importFrom quitte interpolate_missing_periods_
+#' @importFrom dplyr %>% .data filter
 
 toModelResolution <- function(x, m, value = "value", unfilteredDims = NULL) {
 
-  if (!value %in% colnames(x)) {
+  if (!is.null(value) && !value %in% colnames(x)) {
     stop("Can't find the value column '", value, "'.")
   }
 
@@ -28,15 +29,17 @@ toModelResolution <- function(x, m, value = "value", unfilteredDims = NULL) {
     x <- x[x[[f]] %in% m$getSymbols(f)[[1]]$getUELs(), ]
   }
 
-  # interpolate missing periods and remove additional ones
-  periods <- setNames(nm = periodDims) %>%
-    lapply(function(d) as.numeric(m$getSymbols(d)[[1]]$getUELs()))
-  for (dim in intersect(periodDims, colnames(x))) {
-    x <- x %>%
-      interpolate_missing_periods_(periods[dim],
-                                   expand.values = TRUE,
-                                   value = value) %>%
-      filter(.data[[dim]] %in% periods[[dim]])
+  if (!is.null(value)) {
+    # interpolate missing periods and remove additional ones
+    periods <- setNames(nm = periodDims) %>%
+      lapply(function(d) as.numeric(m$getSymbols(d)[[1]]$getUELs()))
+    for (dim in intersect(periodDims, colnames(x))) {
+      x <- x %>%
+        interpolate_missing_periods_(periods[dim],
+                                     expand.values = TRUE,
+                                     value = value) %>%
+        filter(.data[[dim]] %in% periods[[dim]])
+    }
   }
 
   return(x)

@@ -243,24 +243,13 @@ createSets <- function(m, config) {
   # read ban definition from config
   hsBanConfig <- config[["boilerBan"]] %>%
     listToDf() %>%
-    guessColnames(m)
+    toModelResolution(m)
 
   if (!(is.null(hsBanConfig) || identical(hsBanConfig, "NULL"))) {
-
-    # list banned periods
-    hsBanConfig <- hsBanConfig %>%
-      group_by(across(everything())) %>%
-      mutate(ttot = head(ttotNum, 1)) %>%
-      complete(ttot = ttotNum) %>%
-      ungroup() %>%
-      filter(.data[["ttot"]] > .data[["value"]]) %>%
-      select(-"value")
     hsBan <- expandSets(var, region, ttot, hs) %>%
-      mutate(across(everything(), as.character)) %>%
-      mutate(ttot = as.numeric(.data[["ttot"]]))
-    hsBan <- hsBan %>%
-      inner_join(hsBanConfig, by = intersect(colnames(hsBan),
-                                             colnames(hsBanConfig))) %>%
+      left_join(hsBanConfig,
+                by = setdiff(names(hsBanConfig), "value")) %>%
+      filter(!is.na(.data$value) & .data$ttot > .data$value) %>%
       select("var", "region", "ttot", "hs")
   } else {
     hsBan <- NULL

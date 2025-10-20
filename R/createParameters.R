@@ -193,13 +193,12 @@ createParameters <- function(m, config, inputDir) {
   if (!is.null(carbonPrice)) {
     carbonPrice <- carbonPrice %>%
       listToDf(split = "\\.") %>%
-      guessColnames(m) %>%
-      toModelResolution(m) %>%
-      rename(valueConfig = "value")
+      toModelResolution(m)
     p_carbonPrice <- carbonPrice %>%
       right_join(p_carbonPrice,
-                 by = intersect(names(carbonPrice), names(p_carbonPrice))) %>%
-      mutate(value = .data$value + .data$valueConfig,
+                 by = setdiff(names(carbonPrice), "value"),
+                 suffix = c("Config", "")) %>%
+      mutate(value = .data$value + replace_na(.data$valueConfig, 0),
              .keep = "unused")
   }
   p_carbonPrice <- m$addParameter(
