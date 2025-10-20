@@ -2,23 +2,21 @@
 % Please edit documentation in R/listToDf.R
 \name{listToDf}
 \alias{listToDf}
-\title{Convert nested named list to long data.frame}
+\title{Convert named list to data.frame}
 \usage{
-listToDf(x, split = NULL, n = 1)
+listToDf(x, split = NULL)
 }
 \arguments{
-\item{x}{named list with identical depth on each branch}
+\item{x}{named list with keys as column names}
 
 \item{split}{character, split names by this pattern and assume same value for
 each separated item}
-
-\item{n}{Integer, number of nested function calls, leave default}
 }
 \value{
-data.frame with column for each level of the named list
+data.frame with column for each key
 }
 \description{
-Convert nested named list to long data.frame
+Convert named list to data.frame
 }
 \author{
 Robin Hasse
