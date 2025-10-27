@@ -343,7 +343,7 @@ runCalibrationLogit <- function(path,
 
   # WRITE INTANGIBLE COSTS TO FILE -------------------------------------------------------------
 
-  .writeStockRes(m, path)
+  .writeStock(m, path)
 
   fileNames <- list(
     construction = "costIntangCon.csv",
@@ -643,7 +643,7 @@ runCalibrationOptim <- function(path,
 
   # WRITE INTANGIBLE COSTS TO FILE -------------------------------------------------------------
 
-  .writeStockRes(m, path)
+  .writeStock(m, path)
 
   fileNames <- list(
     construction = "costIntangCon.csv",
@@ -1517,10 +1517,10 @@ runCalibrationOptim <- function(path,
 #'
 #' @importFrom utils write.csv
 #'
-.writeStockRes <- function(m, path) {
-  stockRes <- readSymbol(m, symbol = "v_stock")
+.writeStock <- function(m, path) {
+  stock <- readSymbol(m, symbol = "v_stock")
 
-  write.csv(stockRes, file.path(path, "stockCalibrationRes.csv"), row.names = FALSE)
+  write.csv(stock, file.path(path, "stockCalibration.csv"), row.names = FALSE)
 }
 
 #' Write the intangible costs to a .csv file
