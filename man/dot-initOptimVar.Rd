@@ -17,6 +17,7 @@
 }
 \value{
 data frame of desired dimension with x = 0 (column to contain the optimzation variable)
+  and xA = 0.
 }
 \description{
 Initialize the data frame for the optimization variables
