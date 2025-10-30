@@ -446,7 +446,7 @@ q_stockBal3(q,bs,hs,vin,subs,t)$vinExists(t,vin)..
 * calculation of floor space demand
 * TODO: move this calculation to mredgebuildings
 
-q_housingDemand(subs(reg,loc,typ,inc),t)$typInSec(typ,"Res")..
+q_housingDemand(subs(reg,loc,typ,inc),t)..
   p_population(subs,t) * p_floorPerCap(subs,t)
   =l=
   sum(state,
@@ -530,8 +530,8 @@ q_lifeTimeHS(q,hs,vin,subs(reg,loc,typ,inc),ttot)$(    vinExists(ttot,vin)
                                                    and t(ttot))..
   sum(bs,
     sum(ttotOut$(    ttotOut.val le ttot.val
-               !!and p_shareRenHS(hs,reg,typ,ttotOut + 1,ttot) < 1
-               and vinExists(ttotOut,vin)),
+                 !!and p_shareRenHS(hs,reg,typ,ttotOut + 1,ttot) < 1
+                 and vinExists(ttotOut,vin)),
       p_dt(ttotOut)
       * (
         v_demolition(q,bs,hs,vin,subs,ttotOut)
@@ -720,9 +720,13 @@ q_flowVariation(varFlow,q,subs,t)$(ord(t) lt card(t))..
     sqr(v_flowVariationCon(q,state,subs,t))
   )$sameas(varFlow,"construction")
   +
-  sum(ren(renAllowed),
-    sqr(v_flowVariationRen(q,ren,subs,t) / 8)  !! rescale to roughly match order of magnitude of other flows
-  )$sameas(varFlow,"renovation")
+  sum(renAllowedBS,
+    sqr(v_flowVariationRenBS(q,renAllowedBS,subs,t) / 8)  !! rescale to roughly match order of magnitude of other flows
+  )$sameas(varFlow,"renovationBS")
+  +
+  sum(renAllowedHS,
+    sqr(v_flowVariationRenHS(q,renAllowedHS,subs,t) / 8)  !! rescale to roughly match order of magnitude of other flows
+  )$sameas(varFlow,"renovationHS")
   +
   sum(state,
     sqr(v_flowVariationDem(q,state,subs,t))
@@ -737,15 +741,6 @@ q_flowVariationCon(q,state,subs,t)$(ord(t) lt card(t))..
   =e=
   (  v_construction(q,state,subs,t+1)
    - v_construction(q,state,subs,t))
-  / p_dt(t+1)
-;
-
-q_flowVariationRen(q,ren,subs,t)$(    (ord(t) lt card(t))
-                                  and renAllowed(ren))..
-  v_flowVariationRen(q,ren,subs,t)
-  =e=
-  (  sum(vinExists(t,vin),   v_renovation(q,ren,vin,subs,t))
-   - sum(vinExists(t+1,vin), v_renovation(q,ren,vin,subs,t+1)))
   / p_dt(t+1)
 ;
 

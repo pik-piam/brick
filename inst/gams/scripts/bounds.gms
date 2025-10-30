@@ -16,8 +16,8 @@ $ifthen.history exist "history.gdx"
 v_construction.fx(qty,state,subs,thist)                                  = p_constructionHist(qty,state,subs,thist);
 v_demolition.fx(qty,state,vin,subs,thist)$vinExists(thist,vin)           = p_demolitionHist(qty,state,vin,subs,thist);
 $ifthen.sequentialRen "%SEQUENTIALREN%" == "TRUE"
-v_renovationBS.fx(qty,renAllowedBS,vin,subs,thist)$vinExists(thist,vin) = p_renovationBSHist(qty,renAllowedBS,vin,subs,thist);
-v_renovationHS.fx(qty,renAllowedHS,vin,subs,thist)$vinExists(thist,vin) = p_renovationHSHist(qty,renAllowedHS,vin,subs,thist);
+v_renovationBS.fx(qty,renAllowedBS,vin,subs,thist)$vinExists(thist,vin) = p_renovationHistBS(qty,renAllowedBS,vin,subs,thist);
+v_renovationHS.fx(qty,renAllowedHS,vin,subs,thist)$vinExists(thist,vin) = p_renovationHistHS(qty,renAllowedHS,vin,subs,thist);
 $else.sequentialRen
 v_renovation.fx(qty,renAllowed,vin,subs,thist)$vinExists(thist,vin) = p_renovationHist(qty,renAllowed,vin,subs,thist);
 $endif.sequentialRen
@@ -50,7 +50,7 @@ $endif.notMatching
 
 *** boiler ban
 
-v_renovation.fx(qty,bs,hs,bsr,hs2,vin,region,loc,typ,inc,t)$(hsBan("renovation",region,t,hs2) and vinExists(t,vin)) = 0;
+v_renovationHS.fx(qty,bs,hs,hs2,vin,region,loc,typ,inc,t)$(hsBan("renovationHS",region,t,hs2) and vinExists(t,vin)) = 0;
 v_construction.fx(qty,bs,hs,region,loc,typ,inc,t)$hsBan("construction",region,t,hs) = 0;
 v_stock.fx(qty,bs,hs,vin,region,loc,typ,inc,t)$(hsBan("stock",region,t,hs) and vinExists(t,vin)) = 0;
 

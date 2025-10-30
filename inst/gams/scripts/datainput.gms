@@ -76,8 +76,8 @@ execute_loadpoint "history",
   p_stockHist        = v_stock.l
   p_constructionHist = v_construction.l
   p_renovationHist   = v_renovation.l
-  p_renovationBSHist = v_renovationBS.l
-  p_renovationHSHist = v_renovationHS.l
+  p_renovationHistBS = v_renovationBS.l
+  p_renovationHistHS = v_renovationHS.l
   p_demolitionHist   = v_demolition.l
   p_carbonPrice
   p_carrierEmi
@@ -117,8 +117,8 @@ p_specCostOpe(bs,hs,vin,reg,loc,typ,ttot) =
   p_feDemand(hs,bs,vin,reg,typ,ttot)
   * sum(hsCarrier(hs,carrier),
       p_carrierPrice(carrier,reg,ttot)
-      + p_carbonPrice(ttot) * p_carrierEmi(carrier,reg,ttot)
-    )
+      + p_carbonPrice(carrier,ttot) * p_carrierEmi(carrier,reg,ttot)
+    ) * 1.2 !! coarse accounting for VAT
 ;
 display "Compute operational costs in GAMS code";
 $endIf.lowop
