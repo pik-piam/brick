@@ -11,7 +11,7 @@
 #' @param runReporting logical, whether to run the reporting, i.e. write the mif
 #'
 #' @importFrom utils read.csv2
-#' @importFrom reportbrick showSankey plotMatchingComparison
+#' @importFrom reportbrick showSankey plotMatchingComparison reportCalibration plotBRICKCalib
 #' @export
 #'
 startModel <- function(path, runReporting = TRUE) {
@@ -93,9 +93,13 @@ startModel <- function(path, runReporting = TRUE) {
       plotRefDeviation(path)
       plotMatchingComparison(normalizePath(path))
       plotSummary(path, c("loc", "typ"))
+    } else if (cfg[["switches"]][["RUNTYPE"]] == "calibration") {
+      reportCalibration(file.path(path, "calibration_0.gdx"))
+      plotBRICKCalib(path)
     }
 
     try(reportMif(path))
+
   }
 
 }
