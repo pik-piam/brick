@@ -400,7 +400,7 @@ runCalibrationOptim <- function(path,
   # Store initial input data
   file.copy(from = file.path(path, "input.gdx"), to = file.path(path, "input_init.gdx"),
             overwrite = TRUE)
-  variables <- setdiff(names(dims), "stock")
+  variables <- setdiff(names(dims), c("stock", "demolition"))
   varCalib <- switch(
     switches[["CALIBRATIONTYPE"]],
     stocks = "stock",
@@ -418,7 +418,7 @@ runCalibrationOptim <- function(path,
     renovationHS = "renAllowedHS"
   )
   renAllowed <- lapply(
-    X = renAllowedSym[setdiff(variables, c("construction", "demolition"))],
+    X = renAllowedSym[setdiff(variables, "construction")],
     FUN = readSymbol,
     x = mInput
   )
