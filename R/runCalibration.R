@@ -417,7 +417,11 @@ runCalibrationOptim <- function(path,
     renovationBS = "renAllowedBS",
     renovationHS = "renAllowedHS"
   )
-  renAllowed <- lapply(X = renAllowedSym[setdiff(variables, "construction")], FUN = readSymbol, x = mInput)
+  renAllowed <- lapply(
+    X = renAllowedSym[setdiff(variables, c("construction", "demolition"))],
+    FUN = readSymbol,
+    x = mInput
+  )
   vinExists <- readSymbol(mInput, symbol = "vinExists")
   vinCalib <- readSymbol(mInput, symbol = "vinCalib")
   costSym <- list(
