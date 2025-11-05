@@ -4,12 +4,12 @@
 \alias{copyInitialGdx}
 \title{Copy initial gdx to output folder}
 \usage{
-copyInitialGdx(path, config, overwrite = FALSE)
+copyInitialGdx(path, startingPoint, overwrite = FALSE)
 }
 \arguments{
 \item{path}{character vector with folders to write input data into}
 
-\item{config}{named list with run configuration}
+\item{startingPoint}{character with path to the starting point or the respective directory}
 
 \item{overwrite}{logical, should existing input.gdx be overwritten?}
 }

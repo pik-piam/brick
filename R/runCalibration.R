@@ -234,6 +234,9 @@ runCalibrationLogit <- function(path,
 
       ## Evaluate outer objective of Brick results ====
 
+      # Set starting point to output of previous iteration
+      copyInitialGdx(path, file.path(path, paste0("calibration_", i - 1, ".gdx")), overwrite = TRUE)
+
       runGams(path, gamsOptions = gamsOptions, switches = switches, gamsCall = gamsCall)
       gamsSuccess <- checkGamsSuccess(path, silent = TRUE)
 
@@ -524,6 +527,9 @@ runCalibrationOptim <- function(path,
                           vinExists = vinExists, vinCalib = vinCalib, shiftIntang = switches[["SHIFTINTANG"]])
 
       ## Evaluate outer objective of Brick results ====
+
+      # Set starting point to output of previous iteration
+      copyInitialGdx(path, file.path(path, paste0("calibration_", i - 1, ".gdx")), overwrite = TRUE)
 
       runGams(path, gamsOptions = gamsOptions, switches = switchesScenRun, gamsCall = gamsCall)
       gamsSuccess <- checkGamsSuccess(path, silent = TRUE)
