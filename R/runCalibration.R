@@ -216,6 +216,9 @@ runCalibrationLogit <- function(path,
 
     totalStep <- select(stepSizeParams, "region", "loc", "typ", "inc")
 
+    # Set starting point for all GAMS runs in this iteration to output of previous iteration
+    copyInitialGdx(path, file.path(path, paste0("calibration_", i - 1, ".gdx")), overwrite = TRUE)
+
 
 
     # ITERATION OF STEP SIZE ADAPTATION -----------------------------------------------------------
@@ -233,9 +236,6 @@ runCalibrationLogit <- function(path,
 
 
       ## Evaluate outer objective of Brick results ====
-
-      # Set starting point to output of previous iteration
-      copyInitialGdx(path, file.path(path, paste0("calibration_", i - 1, ".gdx")), overwrite = TRUE)
 
       runGams(path, gamsOptions = gamsOptions, switches = switches, gamsCall = gamsCall)
       gamsSuccess <- checkGamsSuccess(path, silent = TRUE)
@@ -515,6 +515,9 @@ runCalibrationOptim <- function(path,
 
     totalStep <- select(stepSizeParams, "region", "loc", "typ", "inc")
 
+    # Set starting point to output of previous iteration
+    copyInitialGdx(path, file.path(path, paste0("calibration_", i - 1, ".gdx")), overwrite = TRUE)
+
 
 
     # ITERATION OF STEP SIZE ADAPTATION -----------------------------------------------------------
@@ -530,10 +533,8 @@ runCalibrationOptim <- function(path,
       .addSpecCostToInput(mInput, path, optimVar, xinit, tcalib, dims, varName = "xA",
                           vinExists = vinExists, vinCalib = vinCalib, shiftIntang = switches[["SHIFTINTANG"]])
 
-      ## Evaluate outer objective of Brick results ====
 
-      # Set starting point to output of previous iteration
-      copyInitialGdx(path, file.path(path, paste0("calibration_", i - 1, ".gdx")), overwrite = TRUE)
+      ## Evaluate outer objective of Brick results ====
 
       runGams(path, gamsOptions = gamsOptions, switches = switchesScenRun, gamsCall = gamsCall)
       gamsSuccess <- checkGamsSuccess(path, silent = TRUE)
