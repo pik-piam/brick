@@ -809,6 +809,7 @@ runCalibrationOptim <- function(path,
                               renAllowed = NULL, vinExists = NULL, agg = NULL, calibResolution = "full") {
 
   flow <- match.arg(flow)
+  eps <- 1E-14 # nolint: object_usage_linter.
 
   # Suppress filtering for vintage in case of construction flow
   if (identical(flow, "construction")) vinExists <- NULL
@@ -865,18 +866,20 @@ runCalibrationOptim <- function(path,
            # Store case of computing the descent direction d
            dCase = case_when(
              # Non-zero deviation and non-zero historic values
-             .data$target > 0 & .data$value > 0 ~ "standard",
+             .data$target > eps & .data$value > eps ~ "standard",
              # One of historic data or Gams results is zero
-             xor(.data$target == 0, .data$value == 0) ~ "oneZero",
+             xor(.data$target <= eps, .data$value <= eps) ~ "oneZero",
              # None of the above holds
              .default = "bothZero"
            )) %>%
     mutate(d = case_match(
       .data$dCase,
       "standard" ~ log(.data$dev),
-      "oneZero" ~ (.data$value - .data$target) * ifelse(abs(.data$intangible) > 1E-6,
-                                                        0.5 * abs(.data$intangible),
-                                                        0.1 * .data$tangible),
+      # avoid scaling up the value computed from previous intangible or tangible costs
+      "oneZero" ~ pmin(1, pmax(-1, .data$value - .data$target))
+      * ifelse(abs(.data$intangible) > 1E-6,
+               0.5 * abs(.data$intangible),
+               0.1 * .data$tangible),
       "bothZero" ~ 0
     )) %>%
     select(dims, "dCase", "dev", "d")
