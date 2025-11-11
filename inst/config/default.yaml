@@ -142,13 +142,25 @@ popScenario: SSP2
 fsScenario: SSP2
 
 ### ban heating systems ###
-# named list with last period of allowed installation
-  # e.g. {renovation: {sobo: 2025, libo: 2030}, construction: {libo: 2035}}
+# named list of a data.frame with last period of allowed installation as value
+# allowed column names: var, region, ttot, hs
+# mandatory column name: value
+  # e.g. var:   [renovation, renovation, construction]
+  #      hs:    [      sobo,       libo,         libo]
+  #      value: [      2025,       2030,         2035]
 boilerBan: []
 
 ### carbon price ###
-# named list with carbon price in USD/t_CO2
-  # e.g. {2022: 0, 2030: 300, 2050: 500}
+# named list of data.frame with carbon price in USD/t_CO2 as value
+# allowed column names: carrier, ttot
+# mandatory column name: value
+# avoid duplicated declaration by grouping items with .
+  # e.g. ttot:    [2022, 2030, 2050]
+  #      value:   [   0,  300,  500]
+  #
+  #      carrier: [elec.heat, elec.heat, coal, coal]
+  #      ttot:    [     2020,      2030, 2025, 2030]
+  #      value:   [       80,       150,    0,  100]
 carbonPrice: []
 
 ### shift of heating system life time ###

@@ -188,17 +188,22 @@ createParameters <- function(m, config, inputDir) {
   carrierEmiLevel   <- config[["carrierEmi"]]
 
   ### carbon price ####
-  p_carbonPrice <- if (is.null(carbonPrice)) {
-    data.frame(ttot = ttotNum, value = 0)
-  } else {
-    carbonPrice %>%
-      listToDf() %>%
-      guessColnames(m) %>%
+  p_carbonPrice <- expandSets("carrier", "ttot", .m = m) %>%
+    mutate(value = 0)
+  if (!is.null(carbonPrice)) {
+    carbonPrice <- carbonPrice %>%
+      listToDf(split = "\\.") %>%
       toModelResolution(m)
+    p_carbonPrice <- carbonPrice %>%
+      right_join(p_carbonPrice,
+                 by = setdiff(names(carbonPrice), "value"),
+                 suffix = c("Config", "")) %>%
+      mutate(value = .data$value + replace_na(.data$valueConfig, 0),
+             .keep = "unused")
   }
   p_carbonPrice <- m$addParameter(
     name = "p_carbonPrice",
-    domain = "ttot",
+    domain = c("carrier", "ttot"),
     records = p_carbonPrice,
     description = "Carbon price in USD/t_CO2eq"
   )
