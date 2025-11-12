@@ -62,7 +62,7 @@ initModel <- function(config = NULL,
     if (isSlurmAvailable()) {
       message("Run will be sent to SLURM")
     } else {
-      stop("sendToSlurm is TRUE, but SLURM is not available. Stopping.")
+      stop("sendToSlurm is TRUE, but SLURM is not available.")
     }
   } else if (isFALSE(sendToSlurm)) {
     message("Run will be executed directly.")
@@ -92,7 +92,7 @@ initModel <- function(config = NULL,
       path <- findLastRun(outputFolder)
       message("Restart: No path given or given path does not exist. Restarting on the latest run: ", path)
     } else {
-      stop("Restart: You passed a non-existing path in a restart run. Stopping.")
+      stop("Restart: You passed a non-existing path in a restart run.")
     }
     if (isTRUE(restart)) {
       message("No restart options were specified. ",
@@ -118,7 +118,7 @@ initModel <- function(config = NULL,
 
     restart <- FALSE
     if (!is.null(path) && file.exists(path)) {
-      stop("You passed an existing path, but did not set this as a restart run. Stopping.")
+      stop("You passed an existing path, but did not set this as a restart run.")
     }
 
     cfg <- if (is.list(config)) {

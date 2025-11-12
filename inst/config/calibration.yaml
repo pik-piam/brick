@@ -8,6 +8,7 @@ startyear: 2005
 calibperiods: [2000, 2005, 2010]
 regionmapping: ["regionmappingEU27asOne.csv", "mredgebuildings"]
 regions: EUR
+matchingRun: 2025-10-09_fixedBuildings
 ignoreShell: TRUE
 statusQuoPreference: 0
 reportingTemplate: lowGran_ignoreShell

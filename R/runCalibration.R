@@ -66,7 +66,7 @@ runCalibration <- function(path,
     switches[["CALIBRATIONMETHOD"]],
     logit = runCalibrationLogit,
     optimization = runCalibrationOptim,
-    stop("You did not provide a valid calibration method. Stopping.")
+    stop("You did not provide a valid calibration method.")
   )
   .runCalibration(
     path,

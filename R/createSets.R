@@ -240,12 +240,12 @@ createSets <- function(m, config) {
 
   ## Boiler ban ====
 
-  # read ban definition from config
-  hsBanConfig <- config[["boilerBan"]] %>%
-    listToDf() %>%
-    toModelResolution(m)
+  if (!is.null(config[["boilerBan"]])) {
+    # read ban definition from config
+    hsBanConfig <- config[["boilerBan"]] %>%
+      listToDf() %>%
+      toModelResolution(m)
 
-  if (!(is.null(hsBanConfig) || identical(hsBanConfig, "NULL"))) {
     hsBan <- expandSets(var, region, ttot, hs) %>%
       left_join(hsBanConfig,
                 by = setdiff(names(hsBanConfig), "value")) %>%
