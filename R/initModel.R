@@ -163,7 +163,7 @@ initModel <- function(config = NULL,
     cfg[["startingPoint"]] <- file.path(path, "output.gdx")
     message("Using the output-gdx of the restarted run as starting point.")
   }
-  copyInitialGdx(path, cfg)
+  copyInitialGdx(path, cfg[["startingPoint"]])
 
   copyHistoryGdx(path, outputFolder, cfg)
 

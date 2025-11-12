@@ -216,6 +216,9 @@ runCalibrationLogit <- function(path,
 
     totalStep <- select(stepSizeParams, "region", "loc", "typ", "inc")
 
+    # Set starting point for all GAMS runs in this iteration to output of previous iteration
+    copyInitialGdx(path, file.path(path, paste0("calibration_", i - 1, ".gdx")), overwrite = TRUE)
+
 
 
     # ITERATION OF STEP SIZE ADAPTATION -----------------------------------------------------------
@@ -397,7 +400,7 @@ runCalibrationOptim <- function(path,
   # Store initial input data
   file.copy(from = file.path(path, "input.gdx"), to = file.path(path, "input_init.gdx"),
             overwrite = TRUE)
-  variables <- setdiff(names(dims), "stock")
+  variables <- setdiff(names(dims), c("stock", "demolition"))
   varCalib <- switch(
     switches[["CALIBRATIONTYPE"]],
     stocks = "stock",
@@ -414,7 +417,11 @@ runCalibrationOptim <- function(path,
     renovationBS = "renAllowedBS",
     renovationHS = "renAllowedHS"
   )
-  renAllowed <- lapply(X = renAllowedSym[setdiff(variables, "construction")], FUN = readSymbol, x = mInput)
+  renAllowed <- lapply(
+    X = renAllowedSym[setdiff(variables, "construction")],
+    FUN = readSymbol,
+    x = mInput
+  )
   vinExists <- readSymbol(mInput, symbol = "vinExists")
   vinCalib <- readSymbol(mInput, symbol = "vinCalib")
   costSym <- list(
@@ -508,6 +515,9 @@ runCalibrationOptim <- function(path,
 
     totalStep <- select(stepSizeParams, "region", "loc", "typ", "inc")
 
+    # Set starting point to output of previous iteration
+    copyInitialGdx(path, file.path(path, paste0("calibration_", i - 1, ".gdx")), overwrite = TRUE)
+
 
 
     # ITERATION OF STEP SIZE ADAPTATION -----------------------------------------------------------
@@ -522,6 +532,7 @@ runCalibrationOptim <- function(path,
 
       .addSpecCostToInput(mInput, path, optimVar, xinit, tcalib, dims, varName = "xA",
                           vinExists = vinExists, vinCalib = vinCalib, shiftIntang = switches[["SHIFTINTANG"]])
+
 
       ## Evaluate outer objective of Brick results ====
 
