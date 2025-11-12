@@ -7,7 +7,7 @@
 #'
 loadCalibrationTarget <- function(config) {
 
-  defaultTargetFolder <- "/p/projects/rd3mod/inputdata/sources/BrickMatching" #nolint: absolute_path_linter.
+  defaultTargetFolder <- file.path(madrat::getConfig("sourcefolder"), "BrickMatching")
 
   # find package directory
   inputDir <- brick.file("input", mustWork = FALSE)
@@ -58,7 +58,7 @@ loadCalibrationTarget <- function(config) {
       return(invisible(NULL))
     } else {
       stop("No valid matching path specified and at least one calibration target file ",
-           "is missing in the input directory\n", inputDir, ".\nStopping.")
+           "is missing in the input directory\n", inputDir, ".")
     }
   }
 
@@ -69,8 +69,7 @@ loadCalibrationTarget <- function(config) {
     if (file.exists(filePath)) {
       file.copy(filePath, inputDir, overwrite = TRUE)
     } else {
-      stop("The file ", fileName, " does not exist in the directory ", targetPath, ". ",
-           "Stopping.")
+      stop("The file ", fileName, " does not exist in the directory ", targetPath, ".")
     }
   })
   message("Copied all calibration target files from ", targetPath, " to ", inputDir, ".")
