@@ -15,7 +15,10 @@ regions: ["AUT", "BEL", "BGR", "CYP", "CZE", "DEU", "DNK", "ESP", "EST", "FIN",
           "NLD", "POL", "PRT", "ROU", "SVK", "SVN", "SWE"]
 #ltFactor: 1.5
 ltEternalShare: 0.05
-boilerBan: {stock: {h2bo: 0}, construction: {h2bo: 0, sobo: 0}, renovation: {h2bo: 0}}
+boilerBan:
+  var:   [stock, construction, construction, renovation]
+  hs:    [ h2bo,         h2bo,         sobo,       h2bo]
+  value: [    0,            0,            0,          0]
 ignoreShell: TRUE
 
 switches:

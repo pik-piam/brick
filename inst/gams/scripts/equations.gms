@@ -999,7 +999,7 @@ $else.sequentialRen
 $endif.sequentialRen
 ;
 
-q_stockDiff(q,state,vin,subs,t)..
+q_stockDiff(q,state,vin,subs,t)$vinExists(t,vin)..
   v_stockDiff(q,state,vin,subs,t)
   =e=
   v_stock(q,state,vin,subs,t) - p_stock(q,state,vin,subs,t)
@@ -1011,24 +1011,24 @@ q_constructionDiff(q,state,subs,t)..
   v_construction(q,state,subs,t) - p_construction(q,state,subs,t)
 ;
 
-q_demolitionDiff(q,state,vin,subs,t)..
+q_demolitionDiff(q,state,vin,subs,t)$vinExists(t,vin)..
   v_demolitionDiff(q,state,vin,subs,t)
   =e=
   v_demolition(q,state,vin,subs,t) - p_demolition(q,state,vin,subs,t)
 ;
 $ifThen.sequentialRen "%SEQUENTIALREN%" == "TRUE"
-q_renovationBSDiff(q,renAllowedBS,vin,subs,t)..
+q_renovationBSDiff(q,renAllowedBS,vin,subs,t)$vinExists(t,vin)..
   v_renovationBSDiff(q,renAllowedBS,vin,subs,t)
   =e=
   v_renovationBS(q,renAllowedBS,vin,subs,t) - p_renovationBS(q,renAllowedBS,vin,subs,t)
 ;
-q_renovationHSDiff(q,renAllowedHS,vin,subs,t)..
+q_renovationHSDiff(q,renAllowedHS,vin,subs,t)$vinExists(t,vin)..
   v_renovationHSDiff(q,renAllowedHS,vin,subs,t)
   =e=
   v_renovationHS(q,renAllowedHS,vin,subs,t) - p_renovationHS(q,renAllowedHS,vin,subs,t)
 ;
 $else.sequentialRen
-q_renovationDiff(q,renAllowed,vin,subs,t)..
+q_renovationDiff(q,renAllowed,vin,subs,t)$vinExists(t,vin)..
   v_renovationDiff(q,renAllowed,vin,subs,t)
   =e=
   v_renovation(q,renAllowed,vin,subs,t) - p_renovation(q,renAllowed,vin,subs,t)
