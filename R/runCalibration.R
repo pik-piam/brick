@@ -335,7 +335,7 @@ runCalibrationLogit <- function(path,
       break
     }
 
-    if (.checkStoppingCriterion(outerObjective, p_calibTarget, parameters[["threshold"]])) {
+    if (.checkStoppingCriterion(outerObjective, p_calibTarget, tcalib, parameters[["threshold"]])) {
       .printConvergenceMessage(i, parameters[["threshold"]])
       break
     }
@@ -641,7 +641,7 @@ runCalibrationOptim <- function(path,
       break
     }
 
-    isConverged <- .checkStoppingCriterion(outerObjective, p_calibTarget, parameters[["threshold"]],
+    isConverged <- .checkStoppingCriterion(outerObjective, p_calibTarget, tcalib, parameters[["threshold"]],
                                            zeroFlow = switches[["CALIBRATIONTYPE"]] == "stockszero")
     if (isConverged) {
       .printConvergenceMessage(i, parameters[["threshold"]])
@@ -1487,6 +1487,7 @@ runCalibrationOptim <- function(path,
 #'
 #' @param outerObjective data frame containing the value of the outer objective function.
 #' @param p_calibTarget list of data frames with historic flows
+#' @param tcalib numeric, time periods on which the calibration is executed
 #' @param threshold list of numeric, absolute and relative threshold of the stopping criterion
 #' @param zeroFlow logical, whether renovation flow data should be filtered for zero flows
 #'
@@ -1494,9 +1495,11 @@ runCalibrationOptim <- function(path,
 #'
 #' @importFrom dplyr %>% .data across all_of group_by left_join mutate select summarise
 #'
-.checkStoppingCriterion <- function(outerObjective, p_calibTarget, threshold, zeroFlow = FALSE) {
+.checkStoppingCriterion <- function(outerObjective, p_calibTarget, tcalib, threshold, zeroFlow = FALSE) {
   sumSqTarget <- do.call(rbind, lapply(names(p_calibTarget), function(var) {
-    .computeSumSqTarget(p_calibTarget[[var]], zeroFlow && grepl("renovation", var)) %>%
+    p_calibTarget[[var]] %>%
+      filter(.data$ttot %in% tcalib) %>%
+      .computeSumSqTarget(zeroFlow && grepl("renovation", var)) %>%
       mutate(variable = var)
   })) %>%
     group_by(across(all_of(c("region", "loc", "typ", "inc")))) %>%

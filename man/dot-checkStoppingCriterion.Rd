@@ -7,6 +7,7 @@
 .checkStoppingCriterion(
   outerObjective,
   p_calibTarget,
+  tcalib,
   threshold,
   zeroFlow = FALSE
 )
@@ -15,6 +16,8 @@
 \item{outerObjective}{data frame containing the value of the outer objective function.}
 
 \item{p_calibTarget}{list of data frames with historic flows}
+
+\item{tcalib}{numeric, time periods on which the calibration is executed}
 
 \item{threshold}{list of numeric, absolute and relative threshold of the stopping criterion}
 
