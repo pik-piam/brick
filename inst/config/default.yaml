@@ -98,7 +98,7 @@ tasks32: FALSE
 # data -------------------------------------------------------------------------
 
 ### input data revision ###
-inputRevision: "0.8.9"
+inputRevision: "0.8.10"
 
 ### force download ###
 # force the model to download new input data even though it seems unchanged
@@ -115,6 +115,12 @@ startingPoint: NULL
 # only for calibration
 # TODO: to be removed when migrating to mredgebuidlings
 matchingRun: NULL
+
+### calibration run ###
+# path to calibration run
+# intangible costs and initial stock are taken from this run
+# If set, assumption files defined in the config are ignored
+calibrationRun: NULL
 
 
 # solvers ----------------------------------------------------------------------

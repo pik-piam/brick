@@ -21,8 +21,8 @@ createSets <- function(m, config) {
   ))
   var <- m$addSet(
     name = "var",
-    records = c("stock", "construction", "renovation", "demolition"),
-    description = "mayor variables of the model"
+    records = c("stock", "construction", "renovation", "renovationBS", "renovationHS", "demolition"),
+    description = "major variables of the model"
   )
   invisible(m$addSet(
     name = "qty",
@@ -240,12 +240,19 @@ createSets <- function(m, config) {
 
   ## Boiler ban ====
 
-  if (!is.null(config[["boilerBan"]])) {
+  # read ban definition from config
+  hsBanConfig <- config[["boilerBan"]]
+  if (!is.null(hsBanConfig)) {
+    varsBan <- c("stock", "construction", "renovation")
+    if ("var" %in% names(hsBanConfig) && !all(hsBanConfig$var %in% varsBan)) {
+      stop("hsBan can only be defined for the following variables: ",
+           paste(varsBan, collapse = ", "))
+    }
+
     # read ban definition from config
-    hsBanConfig <- config[["boilerBan"]] %>%
+    hsBanConfig <- hsBanConfig %>%
       listToDf() %>%
       toModelResolution(m)
-
     hsBan <- expandSets(var, region, ttot, hs) %>%
       left_join(hsBanConfig,
                 by = setdiff(names(hsBanConfig), "value")) %>%
