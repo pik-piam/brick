@@ -207,3 +207,22 @@
 
   toolGetMapping(name, "regional", where)
 }
+
+
+
+#' Convert to numeric vector
+#'
+#' Convert factor to numeric vector. This only works for factors with numeric
+#' levels.
+#'
+#' @param x factor vector
+#' @param warn logical, if \code{TRUE}, a warning is thrown when trying to
+#'   convert a non-factor
+#' @returns numeric vector
+
+.asNumeric <- function(x, warn = TRUE) {
+  if (warn && !is.factor(x)) {
+    warning("x is not a factor. This can lead to unexpected results.")
+  }
+  as.numeric(as.character(x))
+}

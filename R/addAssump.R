@@ -27,7 +27,7 @@ addAssump <- function(df, assumpFile, key = NULL) {
   }
 
   assump <- read.csv(assumpFile, stringsAsFactors = TRUE, na.strings = "", comment.char = "#")
-  assump[["value"]] <- as.numeric(as.character(assump[["value"]]))
+  assump[["value"]] <- .asNumeric(assump[["value"]], warn = FALSE)
 
   if (!is.null(key)) {
     dropDim <- switch(key, BS = "hsr", HS = "bsr", stop("Unknown key"))
@@ -40,7 +40,7 @@ addAssump <- function(df, assumpFile, key = NULL) {
     }
   }
 
-  df[["ttot"]] <- as.numeric(as.character(df[["ttot"]]))
+  df[["ttot"]] <- .asNumeric(df[["ttot"]], warn = FALSE)
   periods <- unique(df[["ttot"]])
 
   if (!".chunk" %in% colnames(assump)) {

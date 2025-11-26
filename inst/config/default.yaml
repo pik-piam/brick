@@ -221,6 +221,10 @@ priceSens:
     construction: 0.1
     renovation: 0.08
 
+### Freeze Parameters ###
+# select parameters and freeze them to the value in a selected period
+  # {params: [p_carrierPrice, p_eff], period: 2020}
+freezeParams: []
 
 ## model switches ====
 # passed to gams
