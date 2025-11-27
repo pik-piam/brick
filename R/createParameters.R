@@ -322,8 +322,15 @@ createParameters <- function(m, config, inputDir) {
   # Probability of X <= Y + shift with Weibull-distributed X and uniformly distributed Y on [0, uniformLength]
   # The result does not depend on uniformLength if uniformLength is sufficiently large.
   probXleqY <- function(shift, shape, scale, uniformLength = 100) {
-    res <- integrate(shiftedPweibull, lower = 0, upper = uniformLength, shift = shift, shape = shape, scale = scale)
-    1/uniformLength * res$value
+    res <- stats::integrate(
+      shiftedPweibull,
+      lower = 0,
+      upper = uniformLength,
+      shift = shift,
+      shape = shape,
+      scale = scale
+    )
+    1 / uniformLength * res$value
   }
 
   # Calculate share of buildings that need to be renovated or demolished between
@@ -500,27 +507,13 @@ createParameters <- function(m, config, inputDir) {
     records = p_shareRenHSfull,
     description = "distribution of hs renovation at high time resolution"
   )
-  timePeriodsFullInit <- ltHs %>%
-    pivot_wider(names_from = "variable") %>%
-    select(-"shape", -"scale") %>%
-    cross_join(data.frame(
-      ttotIn = readSymbol(m, symbol = "tinit"),
-      lt = seq(0, 60, 0.5)
-    )) %>%
-    mutate(ttotIn = .data$ttotIn - round(.data$standingLt / 0.5) * 0.5,
-           ttotOut = .data$ttotIn + .data$lt,
-           .keep = "unused")
+
+  timePeriodsFullInit <- timePeriodsFull %>%
+    filter(.data$ttotIn == readSymbol(m, symbol = "tinit"))
 
   # Share of heating systems in the standing stock at time ttotIn = tinit - standingLifeTimeHs
   # to be renovated by time ttotOut.
-  p_shareRenHSfullInit <- ltHs %>%
-    mutate(value = ifelse(.data$variable == "standingLt", 0, .data$value)) %>%
-    shareRen(
-      standingLifeTime = TRUE, # We already subtracted the standing lifetime,
-      # but want to ignore the time step length as we will compare this to the
-      # lifetimes of the standing stock.
-      timePeriods = timePeriodsFullInit
-    ) %>%
+  p_shareRenHSfullInit <- shareRen(ltHs, standingLifeTime = TRUE, timePeriods = timePeriodsFullInit) %>%
     select("hs", "region", "typ", "ttotIn", "ttotOut", "value") %>%
     toModelResolution(m, unfilteredDims = c("ttotIn", "ttotOut"))
   p_shareRenHSfullInit <- m$addParameter(
