@@ -57,7 +57,7 @@ readSymbol <- function(x, symbol = NULL, selectArea = TRUE,
       if (identical(colnames(data), "*")) {
         data <- getElement(data, "*")
         # For one-dimensional time sets: Convert to numeric
-        if (symbol %in% tDims) data <- as.numeric(as.character(data))
+        if (symbol %in% tDims) data <- .asNumeric(data)
       }
     }
   )
@@ -82,7 +82,7 @@ readSymbol <- function(x, symbol = NULL, selectArea = TRUE,
     tDims
   )
   for (tDim in tDims) {
-    data[[tDim]] <- as.numeric(as.character(data[[tDim]]))
+    data[[tDim]] <- .asNumeric(data[[tDim]], warn = FALSE)
   }
 
   return(data)

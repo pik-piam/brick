@@ -18,7 +18,7 @@ createParameters <- function(m, config, inputDir) {
 
   # restore set objects
   ttot <- readSymbol(m, "ttot")
-  ttotNum <- as.numeric(as.character(ttot))
+  ttotNum <- .asNumeric(ttot)
   vinExists <- readSymbol(m, "vinExists", stringAsFactor = FALSE)
   state <- c("bs", "hs")
 
@@ -708,6 +708,19 @@ createParameters <- function(m, config, inputDir) {
     }
   }
 
+
+
+  # Freeze parameters ----------------------------------------------------------
+
+  freezeParams <- config[["freezeParams"]]
+  if (!is.null(freezeParams)) {
+    m <- .freezeParameters(m = m,
+                           params = freezeParams[["params"]],
+                           period = freezeParams[["period"]])
+  }
+
+
+
   return(m)
 }
 
@@ -754,4 +767,38 @@ createParameters <- function(m, config, inputDir) {
     group_by(across(-all_of(c("vin", "value")))) %>%
     mutate(value = mean(.data$value, na.rm = TRUE)) %>%
     ungroup()
+}
+
+
+
+#' Freeze Parameters
+#'
+#' Select parameters and freeze them to the value in a selected period
+#'
+#' @param m gamstransfer Container with parameters
+#' @param params character vector of parameter names
+#' @param period numeric, period that all values are freezed to; has to be an
+#'   element of ttot
+#' @returns gams Container
+#'
+#' @author Robin Hasse
+#'
+#' @importFrom dplyr %>% .data group_by across all_of mutate
+
+.freezeParameters <- function(m, params, period) {
+  if (is.null(period) || !period %in% readSymbol(m, "ttot")) {
+    stop("The freeze period has to be an element of ttot.")
+  }
+  for (paramName in params) {
+    param <- m$getSymbols(paramName)[[1]]
+    if (!"ttot" %in% param$domain) {
+      stop("Can't freeze ", paramName, ". No ttot dimension.")
+    }
+    records <- param$records %>%
+      group_by(across(-all_of(c("ttot", "value")))) %>%
+      mutate(value = .data$value[.asNumeric(.data$ttot) == period]) %>%
+      ungroup()
+    param$setRecords(records)
+  }
+  m
 }
