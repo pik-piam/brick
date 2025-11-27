@@ -1,8 +1,5 @@
 *** fix variables for historic periods
 
-$ifthenE.notMatching (sameas("%RUNTYPE%","scenario"))or(sameas("%RUNTYPE%","calibration"))
-
-v_stock.fx(qty,state,vin,subs,thist)$vinExists(thist,vin) = p_stockHist(qty,state,vin,subs,thist);
 v_construction.fx(qty,state,subs,thist)                                  = 0;
 v_demolition.fx(qty,state,vin,subs,thist)$vinExists(thist,vin)           = 0;
 $ifthen.sequentialRen "%SEQUENTIALREN%" == "TRUE"
@@ -11,6 +8,10 @@ v_renovationHS.fx(qty,state,hsr,vin,subs,thist)$vinExists(thist,vin) = 0;
 $else.sequentialRen
 v_renovation.fx(qty,renAllowed,vin,subs,thist)$vinExists(thist,vin) = 0;
 $endif.sequentialRen
+
+$ifthenE.notMatching (sameas("%RUNTYPE%","scenario"))or(sameas("%RUNTYPE%","calibration"))
+
+v_stock.fx(qty,state,vin,subs,thist)$vinExists(thist,vin) = p_stockHist(qty,state,vin,subs,thist);
 
 $ifthen.history exist "history.gdx"
 v_construction.fx(qty,state,subs,thist)                                  = p_constructionHist(qty,state,subs,thist);
