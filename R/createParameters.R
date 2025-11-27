@@ -313,6 +313,19 @@ createParameters <- function(m, config, inputDir) {
       select(-"shift")
   }
 
+
+  # Weibull probability distribution function with shifted argument
+  shiftedPweibull <- function(x, shift, shape, scale) {
+    pweibull(x + shift, shape, scale)
+  }
+
+  # Probability of X <= Y + shift with Weibull-distributed X and uniformly distributed Y on [0, uniformLength]
+  # The result does not depend on uniformLength if uniformLength is sufficiently large.
+  probXleqY <- function(shift, shape, scale, uniformLength = 100) {
+    res <- integrate(shiftedPweibull, lower = 0, upper = uniformLength, shift = shift, shape = shape, scale = scale)
+    1/uniformLength * res$value
+  }
+
   # Calculate share of buildings that need to be renovated or demolished between
   # given time steps assuming a Weibull distribution of the technology life time.
   # When passing the standing life time, the share of the initial stock standing
@@ -337,8 +350,10 @@ createParameters <- function(m, config, inputDir) {
     share <- if (isTRUE(standingLifeTime)) {
       # standing life time considers stock not flows -> no consideration of dt
       share %>%
-        mutate(lt = .data$ttotOut - .data$ttotIn + .data$standingLt,
-               p0 = pweibull(.data$standingLt, .data$shape, .data$scale))
+        group_by(across(everything())) %>%
+        mutate(p0 = probXleqY(0, .data$shape, .data$scale),
+               p = probXleqY(.data$ttotOut - .data$ttotIn, .data$shape, .data$scale)) %>%
+        ungroup()
     } else {
       # average past flow activity happened dt/2 before nominal time step ttotIn
       share %>%
@@ -347,14 +362,14 @@ createParameters <- function(m, config, inputDir) {
                   by = c(ttotIn = "ttot")) %>%
         filter(!is.na(.data$dt)) %>%
         mutate(lt = .data$ttotOut - (.data$ttotIn - .data$dt / 2),
-               p0 = 0)
+               p0 = 0,
+               p  = pweibull(.data$lt, .data$shape, .data$scale))
     }
 
     share %>%
-      mutate(p  = pweibull(.data$lt, .data$shape, .data$scale),
-             value = (.data$p - .data$p0) / (1 - .data$p0),
+      mutate(value = (.data$p - .data$p0) / (1 - .data$p0),
              value = ifelse(.data$value > cutOffShare, 1, .data$value)) %>%
-      select(-any_of(c("shape", "scale", "standingLt", "dt", "lt", "p", "p0")))
+      select(-any_of(c("shape", "scale", "dt", "standingLt", "lt", "p", "p0")))
   }
 
   ## building ====
