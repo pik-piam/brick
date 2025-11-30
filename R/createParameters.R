@@ -315,22 +315,46 @@ createParameters <- function(m, config, inputDir) {
 
 
   # Weibull probability distribution function with shifted argument
-  shiftedPweibull <- function(x, shift, shape, scale) {
+  shiftedPweibull <- function(x, shift, shape, scale, support = NULL) {
     pweibull(x + shift, shape, scale)
+  }
+
+  increasingBeta <- function(x, shift, shape, scale, support) {
+    (x / support)^2 / beta(3, 1) * shiftedPweibull(x, shift, shape, scale)
+  }
+
+  decreasingBeta <- function(x, shift, shape, scale, support) {
+    ((support - x) / support)^2 / beta(1, 3) * shiftedPweibull(x, shift, shape, scale)
   }
 
   # Probability of X <= Y + shift with Weibull-distributed X and uniformly distributed Y on [0, uniformLength]
   # The result does not depend on uniformLength if uniformLength is sufficiently large.
-  probXleqY <- function(shift, shape, scale, uniformLength = 100) {
+  probXleqY <- function(shift, shape, scale, hs, uniformLength = 100) {
+    if (hs == "ehp1") {
+      func <- decreasingBeta
+      distrLength <- 25
+    } else if (hs %in% c("libo", "sobo")) {
+      func <- increasingBeta
+      distrLength <- 25
+    } else if (hs == "libo") {
+      func <- increasingBeta
+      distrLength <- 20
+    } else {
+      func <- shiftedPweibull
+      distrLength <- uniformLength
+    }
+
     res <- stats::integrate(
-      shiftedPweibull,
+      func,
       lower = 0,
-      upper = uniformLength,
+      upper = distrLength,
       shift = shift,
       shape = shape,
-      scale = scale
+      scale = scale,
+      support = distrLength
     )
-    1 / uniformLength * res$value
+
+    1 / distrLength * res$value
   }
 
   # Calculate share of buildings that need to be renovated or demolished between
@@ -355,11 +379,21 @@ createParameters <- function(m, config, inputDir) {
     }
 
     share <- if (isTRUE(standingLifeTime)) {
+
       # standing life time considers stock not flows -> no consideration of dt
       share %>%
         group_by(across(everything())) %>%
-        mutate(p0 = probXleqY(0, .data$shape, .data$scale),
-               p = probXleqY(.data$ttotOut - .data$ttotIn, .data$shape, .data$scale)) %>%
+        mutate(p0 = probXleqY(
+          0,
+          .data$shape,
+          .data$scale,
+          if ("hs" %in% colnames(share)) .data$hs else "default"
+        ),
+        p = probXleqY(
+          .data$ttotOut - .data$ttotIn,
+          .data$shape, .data$scale,
+          if ("hs" %in% colnames(share)) .data$hs else "default"
+        )) %>%
         ungroup()
     } else {
       # average past flow activity happened dt/2 before nominal time step ttotIn
