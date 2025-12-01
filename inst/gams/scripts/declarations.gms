@@ -38,8 +38,8 @@ p_demolitionHist(qty,bs,hs,vin,region,loc,typ,inc,ttot)         "historic flow o
 p_shareDem(vin,region,typ,ttot)           "minimum share of demolition at end of life"
 p_shareRenBS(region,ttot,ttot)            "minimum share of renovation from the building shell reaching end of life"
 p_shareRenHS(hs,region,typ,ttot,ttot)     "minimum share of renovation from the heating system reaching end of life"
-p_shareRenBSinit(region,ttot,ttot)        "minimum share of renovation from the building shell of initial stock reaching end of life"
-p_shareRenHSinit(hs,region,typ,ttot,ttot) "minimum share of renovation from the heating system of initial stock reaching end of life"
+p_shareRenBSinit(region,vin,ttot,ttot)        "minimum share of renovation from the building shell of initial stock reaching end of life"
+p_shareRenHSinit(hs,region,typ,vin,ttot,ttot) "minimum share of renovation from the heating system of initial stock reaching end of life"
 
 p_discountRate(typ,ttot) "discount rate (incl. implicit discount) in 1/yr"
 p_discountFac(typ,ttot)  "discount factor w.r.t. t0"
