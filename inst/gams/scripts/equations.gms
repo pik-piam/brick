@@ -519,7 +519,7 @@ q_lifeTimeBS(q,bs,vin,subs(reg,loc,typ,inc),ttot)$(    vinExists(ttot,vin)
       )
     )
     +
-    p_shareRenBSinit(reg,ttotIn,ttot)
+    p_shareRenBSinit(reg,vin,ttotIn,ttot)
     * sum(hs, v_stock(q,bs,hs,vin,subs,ttotIn)$(tinit(ttotIn)))
   )
 ;
@@ -560,7 +560,7 @@ q_lifeTimeHS(q,hs,vin,subs(reg,loc,typ,inc),ttot)$(    vinExists(ttot,vin)
       * p_dt(ttotIn)
     )
     +
-    p_shareRenHSinit(hs,reg,typ,ttotIn,ttot)
+    p_shareRenHSinit(hs,reg,typ,vin,ttotIn,ttot)
     * sum(bs, v_stock(q,bs,hs,vin,subs,ttotIn)$(tinit(ttotIn)))
   )
 ;
