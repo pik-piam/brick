@@ -96,15 +96,12 @@ $ifthen.sequentialRen  "%SEQUENTIALREN%" == "TRUE"
   q_stockBal3
   q_flowVariationRenBS
   q_flowVariationRenHS
-  q_testRenBS
-  q_testRenHS
 $else.sequentialRen
   q_stockBalNext
   q_stockBalPrev
   q_renovationBS
   q_renovationHS
   q_flowVariationRen
-  q_testRen
 $endif.sequentialRen
 $ifthen.notFixedBuildings not "%FIXEDBUILDINGS%" == "TRUE"
   q_housingDemand
@@ -123,9 +120,6 @@ $endif.shell
   q_flowVariationTot
   q_flowVariationCon
   q_flowVariationDem
-*  q_test
-  q_testCon
-
   /
 ;
 $endif.matching

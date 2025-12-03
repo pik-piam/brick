@@ -926,37 +926,6 @@ q_renRate_EuropeanCommissionRenovation(refVar,reg,t)$refVarExists("EuropeanCommi
   )
 ;
 
-
-*** TEST -----------------------------------------------------------------------
-
-equation q_testCon(qty,bs,hs,region,loc,typ,inc);
-q_testCon(q,state,subs)..
-  sum(tinit, v_construction(q,state,subs,tinit))
-  =l=
-  sum(tinit, v_construction(q,state,subs,tinit+1))
-;
-
-equation q_testRen(qty,bs,hs,bsr,hsr,vin,region,loc,typ,inc);
-q_testRen(q,ren,vin,subs)$renAllowed(ren)..
-  sum(tinit, v_renovation(q,ren,vin,subs,tinit))
-  =l=
-  sum(tinit, v_renovation(q,ren,vin,subs,tinit+1))
-;
-
-equation q_testRenBS(qty,bs,hs,bsr,vin,region,loc,typ,inc);
-q_testRenBS(q,renAllowedBS,vin,subs)..
-  sum(tinit, v_renovationBS(q,renAllowedBS,vin,subs,tinit))
-  =l=
-  sum(tinit, v_renovationBS(q,renAllowedBS,vin,subs,tinit+1))
-;
-
-equation q_testRenHS(qty,bs,hs,hsr,vin,region,loc,typ,inc);
-q_testRenHS(q,renAllowedHS,vin,subs)..
-  sum(tinit, v_renovationHS(q,renAllowedHS,vin,subs,tinit))
-  =l=
-  sum(tinit, v_renovationHS(q,renAllowedHS,vin,subs,tinit+1))
-;
-
 $endif.matching
 
 
