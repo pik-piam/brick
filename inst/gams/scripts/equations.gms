@@ -702,10 +702,8 @@ q_flowVariationTot..
   v_flowVariationTot
   =e=
   sum(varFlow$(not(sameas(varFlow,"demolition"))),
-    sum(subs,
-      sum(t$((ord(t) lt card(t))),
-          v_flowVariation(varFlow,"area",subs,t)
-      )
+    sum((subs,t)$(ord(t) gt 1),
+      v_flowVariation(varFlow,"area",subs,t)
     )
   )
 ;
@@ -713,7 +711,7 @@ q_flowVariationTot..
 
 * Square of temporal variations in each flow
 
-q_flowVariation(varFlow,q,subs,t)$(ord(t) lt card(t))..
+q_flowVariation(varFlow,q,subs,t)$(ord(t) gt 1)..
   v_flowVariation(varFlow,q,subs,t)
   =e=
   sum(state,
@@ -736,36 +734,36 @@ q_flowVariation(varFlow,q,subs,t)$(ord(t) lt card(t))..
 
 * temporal variations of each flow
 
-q_flowVariationCon(q,state,subs,t)$(ord(t) lt card(t))..
+q_flowVariationCon(q,state,subs,t)$(ord(t) gt 1)..
   v_flowVariationCon(q,state,subs,t)
   =e=
-  (  v_construction(q,state,subs,t+1)
-   - v_construction(q,state,subs,t))
-  / p_dt(t+1)
+  (  v_construction(q,state,subs,t)
+   - v_construction(q,state,subs,t-1))
+  / p_dt(t)
 ;
 
-q_flowVariationRenBS(q,renAllowedBS,subs,t)$(ord(t) lt card(t))..
+q_flowVariationRenBS(q,renAllowedBS,subs,t)$(ord(t) gt 1)..
   v_flowVariationRenBS(q,renAllowedBS,subs,t)
   =e=
   (  sum(vinExists(t,vin),   v_renovationBS(q,renAllowedBS,vin,subs,t))
-   - sum(vinExists(t+1,vin), v_renovationBS(q,renAllowedBS,vin,subs,t+1)))
-  / p_dt(t+1)
+   - sum(vinExists(t-1,vin), v_renovationBS(q,renAllowedBS,vin,subs,t-1)))
+  / p_dt(t)
 ;
 
-q_flowVariationRenHS(q,renAllowedHS,subs,t)$(ord(t) lt card(t))..
+q_flowVariationRenHS(q,renAllowedHS,subs,t)$(ord(t) gt 1)..
   v_flowVariationRenHS(q,renAllowedHS,subs,t)
   =e=
   (  sum(vinExists(t,vin),   v_renovationHS(q,renAllowedHS,vin,subs,t))
-   - sum(vinExists(t+1,vin), v_renovationHS(q,renAllowedHS,vin,subs,t+1)))
-  / p_dt(t+1)
+   - sum(vinExists(t-1,vin), v_renovationHS(q,renAllowedHS,vin,subs,t-1)))
+  / p_dt(t)
 ;
 
-q_flowVariationDem(q,state,subs,t)$(ord(t) lt card(t))..
+q_flowVariationDem(q,state,subs,t)$(ord(t) gt 1)..
   v_flowVariationDem(q,state,subs,t)
   =e=
   (  sum(vinExists(t,vin),   v_demolition(q,state,vin,subs,t))
-   - sum(vinExists(t+1,vin), v_demolition(q,state,vin,subs,t+1)))
-  / p_dt(t+1)
+   - sum(vinExists(t-1,vin), v_demolition(q,state,vin,subs,t-1)))
+  / p_dt(t)
 ;
 
 
@@ -776,8 +774,7 @@ q_flowVariationDem(q,state,subs,t)$(ord(t) lt card(t))..
 q_replacementDeviation..
   v_replacementDeviation
   =e=
-  sum((vin,subs,t)$(    vinExists(t,vin)
-                    and ord(t) gt 1),
+  sum((vin,subs,t)$vinExists(t,vin),
     (  sum(bs, sqr(v_slackRenBS(bs,vin,subs,t)))
      + sum(hs, sqr(v_slackRenHS(hs,vin,subs,t))))
     * p_dt(t)
