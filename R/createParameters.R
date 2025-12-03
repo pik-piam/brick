@@ -383,7 +383,6 @@ createParameters <- function(m, config, inputDir) {
     description = "minimum share of renovation from the building shell reaching end of life"
   )
 
-  # assumption: average life time of initial stock of building shells: 12 years
   p_shareRenBSinit <- computeShareRen(ltBs, m, standingLifeTime = TRUE, vintages = vintages) %>%
     select("region", "vin", "ttotIn", "ttotOut", "value") %>%
     toModelResolution(m, unfilteredDims = c("ttotIn", "ttotOut"))
@@ -418,7 +417,6 @@ createParameters <- function(m, config, inputDir) {
     description = "minimum share of renovation from the heating system reaching end of life"
   )
 
-  # assumption: average life time of initial stock of heating systems: 12 years
   p_shareRenHSinit <- computeShareRen(ltHs, m, standingLifeTime = TRUE, vintages = vintages) %>%
     select("hs", "region", "typ", "vin", "ttotIn", "ttotOut", "value") %>%
     toModelResolution(m, unfilteredDims = c("ttotIn", "ttotOut"))
