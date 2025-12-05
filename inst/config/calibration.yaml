@@ -6,9 +6,9 @@ granularity: lowGran
 periods: [2000, 2005, 2010, 2015, 2020, 2025, 2030, 2035, 2040, 2045, 2050]
 startyear: 2005
 calibperiods: [2005, 2010]
-regionmapping: ["regionmappingEU27asOne.csv", "mredgebuildings"]
-regions: EUR
-matchingRun: 2025-10-09_fixedBuildings
+regionmapping: ["regionmappingEU27as9.csv", "mredgebuildings"]
+regions: ["EWN", "ECS", "ESC", "ECE", "DEU", "ENC", "ESW", "FRA", "IRL"]
+matchingRun: 2025-12-05_fixedBuildings
 ignoreShell: TRUE
 statusQuoPreference: 0
 reportingTemplate: lowGran_ignoreShell

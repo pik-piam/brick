@@ -17,8 +17,7 @@
 createParameters <- function(m, config, inputDir) {
 
   # restore set objects
-  ttot <- readSymbol(m, "ttot")
-  ttotNum <- .asNumeric(ttot)
+  ttotNum <- readSymbol(m, "ttot")
   vinExists <- readSymbol(m, "vinExists", stringAsFactor = FALSE)
   state <- c("bs", "hs")
 
@@ -609,7 +608,7 @@ createParameters <- function(m, config, inputDir) {
       select(-"variable") %>%
       mutate(qty = "area")
   } else {
-    read.csv(file.path(config[["calibrationRun"]], "stockCalibrationRes.csv")) %>%
+    read.csv(file.path(config[["calibrationRun"]], "stockCalibration.csv")) %>%
       mutate(qty = "area")
   }
   p_stockHist <- expandSets("qty", "bs", "hs", "vin", "region", "loc", "typ",

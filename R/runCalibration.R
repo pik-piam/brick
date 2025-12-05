@@ -1078,7 +1078,6 @@ runCalibrationOptim <- function(path,
   }
 
   specCost <- xinit %>%
-    .filter(vinExists) %>%
     replace_na(list(value = 0)) %>% # replace missing initial values with 0
     left_join(optimVar, by = dims) %>%
     group_by(across(-any_of(c("ttot", "x", "xA", "value")))) %>%
