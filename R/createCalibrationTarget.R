@@ -116,6 +116,15 @@ createCalibrationTarget <- function(path,
   }
 
 
+  .subsetWithPrev <- function(periods, calibperiods) {
+    from <- min(calibperiods)
+    to <- max(calibperiods)
+    periods <- sort(periods)
+    periods[(which(periods == from) - 1):which(periods == to)]
+  }
+
+
+
 
   # CONFIG ---------------------------------------------------------------------
 
@@ -207,7 +216,7 @@ createCalibrationTarget <- function(path,
   cfg[["switches"]][["CALIBRATIONMETHOD"]] <- NULL
   cfg[["title"]] <- paste(basename(path), "for", basename(calibConfig), sep = "_")
   cfg[["matchingRun"]] <- normalizePath(path)
-  cfg[["periods"]] <- cfgCalib$calibperiods
+  cfg[["periods"]] <- .subsetWithPrev(cfgCalib$periods, cfgCalib$calibperiods)
   cfg[["boilerBan"]] <- cfgMatching[["boilerBan"]]
 
   runPath <- initModel(config = cfg,
