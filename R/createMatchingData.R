@@ -42,10 +42,14 @@ createMatchingData <- function(path, config, overwrite = FALSE) {
 
 
   getRefData <- function(ref, data, regions, periods) {
-    data %>%
+    data <- data %>%
       as.quitte(na.rm = TRUE) %>%
       filter(.data[["region"]] %in% regions,
-             .data[["period"]] %in% periods) %>%
+             .data[["period"]] %in% periods)
+    if (nrow(data) == 0) {
+      return(data)
+    }
+    data %>%
       group_by(across(-all_of(c("region", "period", "value")))) %>%
       complete(region = regions, period = periods) %>%
       ungroup() %>%
