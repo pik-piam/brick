@@ -783,6 +783,24 @@ q_replacementDeviation..
 
 
 
+*** minimum status quo bias ----------------------------------------------------
+
+* minimum identical replacement
+$ifThenE.minStatusQuo ((%MINSTATUSQUORES%>0)or(%MINSTATUSQUOCOM%>0))
+q_minStatusQuo(bs,hs,vin,reg,loc,typ,inc,t)$vinExists(t,vin)..
+  v_renovationHS("area",bs,hs,hs,vin,reg,loc,typ,inc,t)
+  =g=
+  (  %MINSTATUSQUORES%$typInSec(typ,"Res")
+   + %MINSTATUSQUOCOM%$typInSec(typ,"Com"))
+  * p_statusQuoShare(hs)
+  * sum(hsr$(    renAllowedHS(bs,hs,hsr)
+             and hs2(hsr)),
+    v_renovationHS("area",bs,hs,hsr,vin,reg,loc,typ,inc,t)
+  )
+;
+$endif.minStatusQuo
+
+
 *** matching objective ---------------------------------------------------------
 
 q_matchingObj..

@@ -116,6 +116,9 @@ $endif.shell
 *  q_dwelSize_Odyssee
 *  q_renRate_EuropeanCommissionRenovation
   q_replacementDeviation
+$ifThenE.minStatusQuo ((%MINSTATUSQUORES%>0)or(%MINSTATUSQUOCOM%>0))
+  q_minStatusQuo
+$endif.minStatusQuo
   q_flowVariation
   q_flowVariationTot
   q_flowVariationCon

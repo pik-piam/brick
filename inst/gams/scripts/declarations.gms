@@ -64,6 +64,8 @@ priceSensBS(var, region, loc, typ, inc) "price sensitivity of building shell cho
 priceSensHS(var, region, loc, typ, inc) "price sensitivity of heating system choice"
 
 p_statusQuoPref "preference for replacehing a heating system with the same technology in USD/m2"
+p_statusQuoShare(hs) "share of heating systems that are identically replaced"
+
 ;
 
 scalars
@@ -203,6 +205,7 @@ q_maxRenRate(region,ttot) "Maximum renovation rate"
 
 q_replacementDeviation "total deviation from technology replacement according to life time"
 
+
 q_flowVariationTot                                            "total temporal variation of flows"
 q_flowVariation(varFLow,qty,region,loc,typ,inc,ttot)          "temporal variation of flows"
 q_flowVariationCon(qty,bs,hs,region,loc,typ,inc,ttot)         "temporal variation of construction flow"
@@ -214,6 +217,8 @@ q_flowVariationDem(qty,bs,hs,region,loc,typ,inc,ttot)         "temporal variatio
 $ifthen.matching "%RUNTYPE%" == "matching"
 q_dwelSize_Odyssee(refVar,region,ttot) "dwelling size at the aggregation of Odyssee_dwelSize in m2/dwel"
 q_renRate_EuropeanCommissionRenovation(refVar,region,ttot)
+
+q_minStatusQuo(bs,hs,vin,region,loc,typ,inc,ttot) "minimum identical replacement from status quo bias"
 
 q_refDeviationTot                              "total squared deviation of quantities from reference source"
 q_refDeviation(reference,region,ttot)          "summed squared deviation from reference sources"

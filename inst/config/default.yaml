@@ -105,7 +105,7 @@ tasks32: FALSE
 # data -------------------------------------------------------------------------
 
 ### input data revision ###
-inputRevision: "0.8.10"
+inputRevision: "0.8.11"
 
 ### force download ###
 # force the model to download new input data even though it seems unchanged
@@ -319,6 +319,25 @@ switches:
     # TRUE
     # FALSE
   SHIFTINTANG: TRUE
+
+  ### Force status quo bias ###
+  # Should matching be forced to meeting status quo bias shares?
+  # Forces deviations from the reference 'StatusQuo' to zero.
+  # Requires 'StatusQuo' as active reference in matching.
+  # only effective for matching runs
+    # TRUE
+    # FALSE
+  FORCESTATUSQUO: FALSE
+
+  ### Minimum status quo bias ###
+  # require minimum identical replacement
+  # The required minimum identical replacement share is is scaled by this number
+  #  for residential and commercial buildings.
+  # only effective for matching runs
+    # <numeric value between 0 and 1>
+    # 0: no effect
+  MINSTATUSQUORES: 0 # residential
+  MINSTATUSQUOCOM: 0 # commercial
 
 
 # gams parameters --------------------------------------------------------------

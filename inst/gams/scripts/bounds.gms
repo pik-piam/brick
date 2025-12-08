@@ -9,7 +9,7 @@ $else.sequentialRen
 v_renovation.fx(qty,renAllowed,vin,subs,thist)$vinExists(thist,vin) = 0;
 $endif.sequentialRen
 
-$ifthenE.notMatching (sameas("%RUNTYPE%","scenario"))or(sameas("%RUNTYPE%","calibration"))
+$ifthenE.scenOrCalib (sameas("%RUNTYPE%","scenario"))or(sameas("%RUNTYPE%","calibration"))
 
 v_stock.fx(qty,state,vin,subs,thist)$vinExists(thist,vin) = p_stockHist(qty,state,vin,subs,thist);
 
@@ -24,7 +24,7 @@ v_renovation.fx(qty,renAllowed,vin,subs,thist)$vinExists(thist,vin) = p_renovati
 $endif.sequentialRen
 $endif.history
 
-$endif.notMatching
+$endif.scenOrCalib
 
 
 $ifthenE.calibration (sameas("%CALIBRATIONMETHOD%","optimization"))or(sameas("%CALIBRATIONMETHOD%","logit"))
@@ -47,6 +47,10 @@ $ifthen.notMatching not "%RUNTYPE%" == "matching"
 v_slackRenBS.lo(bs,vin,subs,ttot) = 0;
 v_slackRenHS.lo(hs,vin,subs,ttot) = 0;
 $endif.notMatching
+
+* always fix it for now
+v_slackRenBS.lo(bs,vin,subs,ttot) = 0;
+v_slackRenHS.lo(hs,vin,subs,ttot) = 0;
 
 
 *** boiler ban
@@ -79,7 +83,13 @@ $endif.sequentialRen
 $endif.renCorrect
 
 
-*** temp
+*** matching
 
-v_slackRenBS.lo(bs,vin,subs,ttot) = 0;
-v_slackRenHS.lo(hs,vin,subs,ttot) = 0;
+$ifthen.matching "%RUNTYPE%" == "matching"
+
+$ifthen.forceSQ "%FORCESTATUSQUO%" == "TRUE"
+v_refDeviationVar.fx(ref,refVar,reg,t)$(    sameas(ref, "StatusQuo")
+                                        and refVarRef(ref, refVar)) = 0;
+$endif.forceSQ
+
+$endif.matching

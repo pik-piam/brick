@@ -596,6 +596,21 @@ createParameters <- function(m, config, inputDir) {
   )
 
 
+  # status quo share ====
+
+  p_statusQuoShare <- readInput("f_statusQuoShare.cs4r", "hs", inputDir)
+
+  p_statusQuoShare <- expandSets("hs", .m = m) %>%
+    left_join(p_statusQuoShare, by = "hs")
+
+  p_statusQuoShare <- m$addParameter(
+    name = "p_statusQuoShare",
+    domain = c("hs"),
+    records = p_statusQuoShare,
+    description = "share of heating systems that are identically replaced"
+  )
+
+
 
   # Historic stock -------------------------------------------------------------
 

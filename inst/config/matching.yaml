@@ -25,4 +25,7 @@ switches:
   RUNTYPE: matching
   FIXEDBUILDINGS: TRUE
   SEQUENTIALREN: TRUE
+  # higher status quo bias in residential than commercial
+  MINSTATUSQUORES: 0.9
+  MINSTATUSQUOCOM: 0.5
 ...
