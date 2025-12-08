@@ -9,6 +9,13 @@ title: "default"
 periods: [2000, 2005, 2010, 2015, 2020, 2025, 2030, 2035, 2040, 2045, 2050,
           2055, 2060, 2070, 2080, 2090, 2100, 2110, 2130, 2150]
 
+### initial time step ###
+# initial time step for which the standing stocks of building shells and heating
+#  systems are considered
+# has to be part of periods (ideally the first period)
+# avoid changing this to maintain consistency across runs
+tinit: 2000
+
 ### start year ###
 # first free time step
 # there has to be at least one time step before to start from known stock
