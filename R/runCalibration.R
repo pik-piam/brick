@@ -198,6 +198,7 @@ runCalibrationLogit <- function(path,
 
     deviation <- .namedLapply(variables, function(var) {
       .computeDeviation(m, p_calibTarget[[var]], dims[[var]], tcalib, flow = var,
+                        renAllowed = renAllowed[[var]], vinExists = vinExists,
                         agg = switches[["AGGREGATEDIM"]], calibResolution = switches[["CALIBRESOLUTION"]])
     })
 
