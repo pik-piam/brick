@@ -197,7 +197,8 @@ runCalibrationLogit <- function(path,
     # READ IN BRICK RESULTS AND COMPUTE DEVIATION -------------------------------------------------
 
     deviation <- .namedLapply(variables, function(var) {
-      .computeDeviation(m, p_calibTarget[[var]], dims[[var]], tcalib, flow = var,
+      .computeDeviation(m, p_calibTarget[[var]], dims[[var]], tcalib,
+                        renAllowed = renAllowed[[var]], vinExists = vinExists, flow = var,
                         agg = switches[["AGGREGATEDIM"]], calibResolution = switches[["CALIBRESOLUTION"]])
     })
 
@@ -804,9 +805,9 @@ runCalibrationOptim <- function(path,
 #' @param target data frame of historical data
 #' @param dims character, dimensions of historic data and Brick results
 #' @param tcalib numeric, time steps to calibrate on
-#' @param flow character, either 'construction' or 'renovation'
 #' @param renAllowed data frame with allowed renovation transitions
 #' @param vinExists data frame with existing vintages for each time period
+#' @param flow character, either 'construction' or 'renovation'
 #' @param agg character, dimensions to aggregate Brick results and target data over
 #' @param calibResolution character, resolution of the calibration for renovation flows
 #'
@@ -815,9 +816,9 @@ runCalibrationOptim <- function(path,
 #' @importFrom dplyr %>% .data case_match case_when filter left_join mutate select
 #' @importFrom tidyr pivot_wider replace_na
 #'
-.computeDeviation <- function(m, target, dims, tcalib,
+.computeDeviation <- function(m, target, dims, tcalib, renAllowed, vinExists,
                               flow = c("construction", "renovation", "renovationBS", "renovationHS"),
-                              renAllowed = NULL, vinExists = NULL, agg = NULL, calibResolution = "full") {
+                              agg = NULL, calibResolution = "full") {
 
   flow <- match.arg(flow)
   eps <- 1E-14 # nolint: object_usage_linter.
