@@ -10,9 +10,9 @@ Then compute the adjustment term for the calibration \code{d}}
   target,
   dims,
   tcalib,
+  renAllowed,
+  vinExists,
   flow = c("construction", "renovation", "renovationBS", "renovationHS"),
-  renAllowed = NULL,
-  vinExists = NULL,
   agg = NULL,
   calibResolution = "full"
 )
@@ -26,11 +26,11 @@ Then compute the adjustment term for the calibration \code{d}}
 
 \item{tcalib}{numeric, time steps to calibrate on}
 
-\item{flow}{character, either 'construction' or 'renovation'}
-
 \item{renAllowed}{data frame with allowed renovation transitions}
 
 \item{vinExists}{data frame with existing vintages for each time period}
+
+\item{flow}{character, either 'construction' or 'renovation'}
 
 \item{agg}{character, dimensions to aggregate Brick results and target data over}
 
