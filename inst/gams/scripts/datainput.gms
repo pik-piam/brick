@@ -139,28 +139,28 @@ p_discountFac(typ,ttot) =
 * - average across relevant vintages
 
 p_lccCon(cost,var,bs,hs,reg,loc,typ,inc,ttot) =
-  sum(ttot2$(ttot2.val ge ttot.val),
-    p_discountFac(typ,ttot2) / p_discountFac(typ,ttot)
+  sum(ttotIn$(ttotIn.val ge ttot.val),
+    p_discountFac(typ,ttotIn) / p_discountFac(typ,ttot)
     *
     (
-      p_specCostCon(cost,bs,hs,reg,loc,typ,inc,ttot2)$(    sameas(var,"construction")
-                                                     and sameas(ttot,ttot2))
-      + sum(vin$vinExists(ttot2,vin),
+      p_specCostCon(cost,bs,hs,reg,loc,typ,inc,ttotIn)$(    sameas(var,"construction")
+                                                        and sameas(ttot,ttotIn))
+      + sum(vin$vinExists(ttotIn,vin),
           p_dtVin(ttot,vin)
           / p_dt(ttot)
           * (
               p_specCostOpe(bs,hs,vin,reg,loc,typ,ttot)$(    sameas(var,"stock")
-                                                       and sameas(cost,"tangible"))
+                                                         and sameas(cost,"tangible"))
             + p_specCostRen(cost,bs,hs,bs,"0",vin,reg,loc,typ,inc,ttot)$sameas(var,"renovation")
               / p_lifeTimeBS(reg)
             + p_specCostRen(cost,bs,hs,"0",hs,vin,reg,loc,typ,inc,ttot)$sameas(var,"renovation")
               / p_lifeTimeHS(hs,reg,typ)
           )
-          * (1 - p_probDem(reg,typ,ttot2,ttot))
-      ) * p_dt(ttot2)
+          * (1 - p_probDem(reg,typ,ttotIn,ttot))
+      ) * p_dt(ttotIn)
       + p_specCostDem$(    sameas(var,"demolition")
                        and sameas(cost,"tangible"))
-        * (p_probDem(reg,typ,ttot2,ttot) - p_probDem(reg,typ,ttot2-1,ttot))
+        * (p_probDem(reg,typ,ttotIn,ttot) - p_probDem(reg,typ,ttotIn-1,ttot))
     )
   )
 ;

@@ -648,8 +648,46 @@ q_lifeTimeHS(q,hs,vin,subs(reg,loc,typ,inc),ttot)$(    vinExists(ttot,vin)
       * p_dt(ttotIn)
     )
     +
-    p_shareRenHSinit(hs,reg,typ,vin,ttotIn,ttot)
-    * sum(bs, v_stock(q,bs,hs,vin,subs,ttotIn)$(tinit(ttotIn)))
+    (
+      p_shareRenHSinit("matched",hs,reg,typ,vin,ttotIn,ttot)
+      * sum(bs, v_stock(q,bs,hs,vin,subs,ttotIn))
+    )$(    lifetimeHsIsFlexible eq 0
+       and tinit(ttotIn))
+$ifthen.matching "%RUNTYPE%" == "matching"
+    +
+    (
+      v_shareRenHSinit(hs,reg,typ,vin,ttotIn,ttot)
+      * sum(bs, p_stockHist(q,bs,hs,vin,subs,ttotIn))
+    )$(    lifetimeHsIsFlexible eq 1
+       and tinit(ttotIn))
+$endif.matching
+  )
+;
+
+
+* monotonuous increasing share of replaced initial heating systems
+q_shareRenHSinit(hs,reg,typ,vin,tinit,ttotOut)$(    ord(ttotOut) gt 1
+                                                and vinExists(ttotOut,vin))..
+  v_shareRenHSinit(hs,reg,typ,vin,tinit,ttotOut)
+  =g=
+  v_shareRenHSinit(hs,reg,typ,vin,tinit,ttotOut-1)
+;
+
+* roughly maintain standing stock age across all heating systems
+q_shareRenHSinitTot(reg,typ,vin,ttotOut)$(    lifetimeHsIsFlexible eq 1
+                                          and vinExists(ttotOut,vin))..
+  sum((hs, tinit),
+    v_shareRenHSinit(hs,reg,typ,vin,tinit,ttotOut)
+    * sum((bs,loc,inc),
+      p_stockHist("area",bs,hs,vin,reg,loc,typ,inc,tinit)
+    )
+  )
+  =e=
+  sum((hs, tinit),
+    p_shareRenHSinit("central",hs,reg,typ,vin,tinit,ttotOut)
+    * sum((bs,loc,inc),
+      p_stockHist("area",bs,hs,vin,reg,loc,typ,inc,tinit)
+    )
   )
 ;
 
