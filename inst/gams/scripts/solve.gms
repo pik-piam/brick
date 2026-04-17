@@ -8,7 +8,7 @@ model fullSysLP "full system linear optimisation"
   q_obj
   q_sysCost
   q_conCost
-  q_renCost
+  q_renCostLinear
   q_opeCost
   q_demCost
 $ifthen.sequentialRen  "%SEQUENTIALREN%" == "TRUE"
@@ -50,16 +50,21 @@ model fullSysNLP "full system linear optimisation"
   q_renCost
   q_opeCost
   q_demCost
+  q_factorIntangCostHeatPump
+  q_factorIntangCostHeatPumpNorm
+  q_shareHeatPump
 $ifthen.sequentialRen  "%SEQUENTIALREN%" == "TRUE"
   q_stockBal1
   q_stockBal2
   q_stockBal3
+  q_specCostRenHS
 $else.sequentialRen
   q_stockBalNext
   q_stockBalPrev
   q_renovationBS
   q_renovationHS
   q_entropyRenFrom
+  q_specCostRen  
 $endif.sequentialRen
 $ifthen.notFixedBuildings not "%FIXEDBUILDINGS%" == "TRUE"
   q_housingDemand

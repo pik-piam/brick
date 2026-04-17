@@ -47,14 +47,17 @@ createSets <- function(m, config) {
     description = "all modelling time steps"
   )
 
+  tinit <- periodFromConfig(config, "tinit")
   invisible(m$addSet(
     name = "tinit",
-    records = periodFromConfig(config, "tinit"),
+    records = tinit,
     description = "initial modelling time step"
   ))
+
+  tNum <- periodFromConfig(config, "t")
   invisible(m$addSet(
     name = "t",
-    records = periodFromConfig(config, "t"),
+    records = tNum,
     description = "modelled time steps"
   ))
 
@@ -64,14 +67,43 @@ createSets <- function(m, config) {
     description = "historic time steps"
   ))
 
-  if (config[["switches"]][["RUNTYPE"]] == "calibration") {
+  if (!is.null(config[["calibperiods"]])) {
     tcalib <- periodFromConfig(config, "tcalib")
-    invisible(m$addSet(
-      "tcalib",
-      records = tcalib,
-      description = "time steps considered by the calibration when minimising deviation from target trajectories"
-    ))
+  } else {
+    if (config[["switches"]][["RUNTYPE"]] == "calibration") {
+      stop("Calibration time periods are missing from the calibration config.")
+    }
+    if (!is.null(config[["calibrationRun"]])) {
+      if (file.exists(file.path(config[["calibrationRun"]], "config", "config_COMPILED.yaml"))) {
+        calibConfig <- readConfig(
+          file.path(config[["calibrationRun"]], "config", "config_COMPILED.yaml"),
+          readDirect = TRUE
+        )
+        tcalib <- periodFromConfig(calibConfig, "tcalib")
+      } else {
+        stop("The given calibration run does not contain a config file,",
+             "which is required to determine the calibration time periods.")
+      }
+    } else {
+      warning("Time steps of calibration are not given and could not be determined from calibration config.\n",
+              "Assuming that the first model time step is the (only) calibration time step.",
+              "If this is not a test run, please specify calibration time periods or a calibration run and restart.")
+      tcalib <- min(tNum)
+    }
   }
+  tcalibLast <- max(tcalib)
+
+  invisible(m$addSet(
+    "tcalib",
+    records = tcalib,
+    description = "time steps considered by the calibration when minimising deviation from target trajectories"
+  ))
+  invisible(m$addSet(
+    "tcalibLast",
+    records = tcalibLast,
+    description = "last time step of calibration or initial time step if tcalib is empty"
+  ))
+
 
 
   # Vintages -------------------------------------------------------------------
