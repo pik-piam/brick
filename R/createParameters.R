@@ -148,12 +148,12 @@ createParameters <- function(m, config, inputDir) {
                                          "loc", "typ", "inc", "ttot", .m = m) %>%
       .filter(readSymbol(m, "renAllowedBS"), vinExists) %>%
       mutate(cost = "intangible", .before = 1) %>%
-      addAssump(intangCostFiles[["ren"]], key = "BS")
+      addAssump(intangCostFiles[["ren"]], vinDimMap = vintages, key = "BS")
     p_specCostRenHS_intang <- expandSets("bs", "hs", "hsr", "vin", "region",
                                          "loc", "typ", "inc", "ttot", .m = m) %>%
       .filter(readSymbol(m, "renAllowedHS"), vinExists) %>%
       mutate(cost = "intangible", .before = 1) %>%
-      addAssump(intangCostFiles[["ren"]], key = "HS")
+      addAssump(intangCostFiles[["ren"]], vinDimMap = vintages, key = "HS")
 
     p_specCostRenBS <- rbind(p_specCostRenBS_tang, p_specCostRenBS_intang)
     p_specCostRenHS <- rbind(p_specCostRenHS_tang, p_specCostRenHS_intang)
@@ -210,11 +210,10 @@ createParameters <- function(m, config, inputDir) {
     carbonPrice <- carbonPrice %>%
       listToDf(split = "\\.") %>%
       toModelResolution(m)
-    p_carbonPrice <- carbonPrice %>%
-      right_join(p_carbonPrice,
-                 by = setdiff(names(carbonPrice), "value"),
-                 suffix = c("Config", "")) %>%
-      relocate("carrier", "ttot", "value") %>%
+    p_carbonPrice <- p_carbonPrice %>%
+      left_join(carbonPrice,
+                by = setdiff(names(carbonPrice), "value"),
+                suffix = c("", "Config")) %>%
       mutate(value = .data$value + replace_na(.data$valueConfig, 0),
              .keep = "unused")
   }

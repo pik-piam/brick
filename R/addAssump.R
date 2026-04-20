@@ -2,6 +2,7 @@
 #'
 #' @param df data.frame for the cost of construction or renovation
 #' @param assumpFile character, file path to assumption file
+#' @param vinDimMap data frame with mapping for vintages to start and end years.
 #' @param key character, renovation asset, either \code{"BS"} (building
 #'   shell) or  \code{"HS"} heating system.
 #' @returns data frame with added intangible cost
@@ -12,16 +13,16 @@
 #' @importFrom utils read.csv2
 #' @importFrom dplyr %>% .data mutate left_join select
 
-addAssump <- function(df, assumpFile, key = NULL) {
+addAssump <- function(df, assumpFile, vinDimMap = NULL, key = NULL) {
 
   # Extrapolate vintages: Fill NA values in df by extrapolating constantly from the last existing vintage
-  .extrapolateVintages <- function(df, vinWithVal) {
-    if (!"vin" %in% colnames(df)) {
+  .extrapolateVintages <- function(df, vinWithVal, vinDimMap = NULL) {
+    if (!"vin" %in% colnames(df) || is.null(vinDimMap)) {
       return(df)
     }
 
     vinMax <- data.frame(vin = vinWithVal) %>%
-      mutate(to = as.numeric(sub(".*(\\d{4})$", "\\1", as.character(.data$vin)))) %>%
+      left_join(vinDimMap, by = "vin") %>%
       filter(.data$to == max(.data$to)) %>%
       dplyr::pull(var = "vin") %>%
       unique()
@@ -74,7 +75,7 @@ addAssump <- function(df, assumpFile, key = NULL) {
     df <- assump %>%
       interpolate_missing_periods(ttot = periods, expand.values = TRUE) %>%
       right_join(df, by = colnames(df)) %>%
-      .extrapolateVintages(vinWithVal = vinAssump)
+      .extrapolateVintages(vinWithVal = vinAssump, vinDimMap = vinDimMap)
 
     if (any(is.na(df$value))) {
       warning("Data on intangible costs is incomplete. First row with missing data: ",

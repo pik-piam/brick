@@ -4,12 +4,14 @@
 \alias{addAssump}
 \title{Add assumed intangible costs}
 \usage{
-addAssump(df, assumpFile, key = NULL)
+addAssump(df, assumpFile, vinDimMap = NULL, key = NULL)
 }
 \arguments{
 \item{df}{data.frame for the cost of construction or renovation}
 
 \item{assumpFile}{character, file path to assumption file}
+
+\item{vinDimMap}{data frame with mapping for vintages to start and end years.}
 
 \item{key}{character, renovation asset, either \code{"BS"} (building
 shell) or  \code{"HS"} heating system.}
