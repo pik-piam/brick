@@ -40,26 +40,26 @@ computeShareRen <- function(params,
   # Functions ------------------------------------------------------------------
 
   # Weibull probability distribution function with shifted argument
-  .shiftedPweibull <- function(x, shift, shape, scale, support = NULL) {
+  .shiftedPweibull <- function(x, shift, shape, scale, support = NULL, exponent = NULL) {
     stats::pweibull(x + shift, shape, scale)
   }
 
-  # Density of rescaled Beta(3,1) distribution
+  # Density of rescaled Beta distribution
   # multiplied with shifted Weibull distribution function
-  .increasingBeta <- function(x, shift, shape, scale, support) {
-    (x / support)^2 / beta(3, 1) * .shiftedPweibull(x, shift, shape, scale)
+  .increasingBeta <- function(x, shift, shape, scale, support, exponent) {
+    (x / support)^exponent / beta(exponent + 1, 1) * .shiftedPweibull(x, shift, shape, scale)
   }
 
-  # Density of rescaled Beta(1,3) distribution
+  # Density of rescaled Beta distribution
   # multiplied with shifted Weibull distribution function
-  .decreasingBeta <- function(x, shift, shape, scale, support) {
-    ((support - x) / support)^2 / beta(1, 3) * .shiftedPweibull(x, shift, shape, scale)
+  .decreasingBeta <- function(x, shift, shape, scale, support, exponent) {
+    ((support - x) / support)^exponent / beta(1, exponent + 1) * .shiftedPweibull(x, shift, shape, scale)
   }
 
   # Probability of X <= Y + shift with Weibull-distributed X and uniformly distributed Y on [0, maxAge],
   # where maxAge is the difference between initial time and the start of the vintage cohort.
-  # for lower bounds, Y follows a rescaled Beta(1,3)-distribution, corresponding to a decreasing quadratic density
-  # for upper bounds, Y follows a rescaled Beta(3,1)-distribution, corresponding to an increasing
+  # for lower bounds, Y follows a rescaled falling Beta-distribution, corresponding to a decreasing quadratic density
+  # for upper bounds, Y follows a rescaled rising Beta-distribution, corresponding to an increasing
   # quadratic density
   # The maximum age is capped at 25 years for beta functions.
   .probXleqY <- function(shift, shape, scale, maxAge, level = "central") {
@@ -85,7 +85,8 @@ computeShareRen <- function(params,
       shift = shift,
       shape = shape,
       scale = scale,
-      support = distrLength
+      support = distrLength,
+      exponent = 4
     )
 
     # Rescale result by the length of the support of the density
