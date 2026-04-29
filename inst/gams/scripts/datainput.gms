@@ -12,7 +12,6 @@ $load priceSensBS priceSensHS p_statusQuoPref
 $load p_carbonPrice p_carrierPrice p_carrierEmi p_ueDemand p_eff p_renDepth
 $load p_discountRate
 $load p_population
-$load p_stockHist
 $load p_shareDem p_shareRenBS p_shareRenHS p_shareRenBSinit p_shareRenHSinit
 $load p_floorPerCap
 $load p_probDem p_lifeTimeBS p_lifeTimeHS
@@ -39,6 +38,7 @@ $endif.renCorrect
 
 $ifthenE.calibration (sameas("%CALIBRATIONMETHOD%","optimization"))or(sameas("%CALIBRATIONMETHOD%","logit"))
 $gdxin input.gdx
+$load p_stockHist
 $load p_stockCalibTarget p_constructionCalibTarget p_demolitionCalibTarget
 $ifThen.sequentialRen "%SEQUENTIALREN%" == "TRUE"
 $load p_renovationBSCalibTarget p_renovationHSCalibTarget
@@ -65,8 +65,9 @@ $endIf.lowop
 
 *** starting point -------------------------------------------------------------
 
-v_stock.l(qty,state,vin,subs,thist)$vinExists(thist,vin) =
-  p_stockHist(qty,state,vin,subs,thist);
+* TODO: revisit this
+p_stockHist("area",state,vin,subs,thist)$vinExists(thist,vin) = 0;
+
 $if exist "start.gdx" execute_loadpoint "start";
 
 

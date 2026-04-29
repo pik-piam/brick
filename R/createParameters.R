@@ -654,37 +654,33 @@ createParameters <- function(m, config, inputDir) {
   # Historic stock -------------------------------------------------------------
 
   # stock of residential floor space
-  p_stockHist <- if (is.null(config[["calibrationRun"]])) {
-    readInput("f_buildingStock.cs4r",
-              c("ttot", "region", "variable", "typ", "loc", "vin", "hs", "bs"),
-              inputDir) %>%
-      filter(.data[["variable"]] == "floor") %>%
-      select(-"variable") %>%
+  if (!is.null(config[["calibrationRun"]])) {
+    p_stockHist <- read.csv(file.path(config[["calibrationRun"]], "stockCalibration.csv")) %>%
       mutate(qty = "area")
-  } else {
-    read.csv(file.path(config[["calibrationRun"]], "stockCalibration.csv")) %>%
-      mutate(qty = "area")
-  }
-  p_stockHist <- expandSets("qty", "bs", "hs", "vin", "region", "loc", "typ",
-                            "inc", "ttot", .m = m) %>%
-    inner_join(vinExists, by = c("vin", "ttot")) %>%
-    left_join(p_stockHist,
-              by = setdiff(names(p_stockHist), "value")) %>%
-    mutate(value = replace_na(.data[["value"]], 0))
+    p_stockHist <- expandSets("qty", "bs", "hs", "vin", "region", "loc", "typ",
+                              "inc", "ttot", .m = m) %>%
+      inner_join(vinExists, by = c("vin", "ttot")) %>%
+      left_join(p_stockHist,
+                by = setdiff(names(p_stockHist), "value")) %>%
+      mutate(value = replace_na(.data[["value"]], 0))
 
-  if (isTRUE(config[["ignoreShell"]])) {
-    p_stockHist <- p_stockHist %>%
-      group_by(across(-all_of(c("bs", "value")))) %>%
-      mutate(value = ifelse(.data[["bs"]] == "low", sum(.data[["value"]]), 0)) %>%
-      ungroup()
+    if (isTRUE(config[["ignoreShell"]])) {
+      p_stockHist <- p_stockHist %>%
+        group_by(across(-all_of(c("bs", "value")))) %>%
+        mutate(value = ifelse(.data[["bs"]] == "low", sum(.data[["value"]]), 0)) %>%
+        ungroup()
+    }
+
+    p_stockHist <- m$addParameter(
+      name = "p_stockHist",
+      domain = c("qty", "bs", "hs", "vin", "region", "loc", "typ", "inc", "ttot"),
+      records = p_stockHist,
+      description = "historic stock of buildings in million m2"
+    )
   }
 
-  p_stockHist <- m$addParameter(
-    name = "p_stockHist",
-    domain = c("qty", "bs", "hs", "vin", "region", "loc", "typ", "inc", "ttot"),
-    records = p_stockHist,
-    description = "historic stock of buildings in million m2"
-  )
+
+
 
 
 
