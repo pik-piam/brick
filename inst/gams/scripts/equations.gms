@@ -648,8 +648,46 @@ q_lifeTimeHS(q,hs,vin,subs(reg,loc,typ,inc),ttot)$(    vinExists(ttot,vin)
       * p_dt(ttotIn)
     )
     +
-    p_shareRenHSinit(hs,reg,typ,vin,ttotIn,ttot)
-    * sum(bs, v_stock(q,bs,hs,vin,subs,ttotIn)$(tinit(ttotIn)))
+    (
+      p_shareRenHSinit("matched",hs,reg,typ,vin,ttotIn,ttot)
+      * sum(bs, v_stock(q,bs,hs,vin,subs,ttotIn))
+    )$(    lifetimeHsIsFlexible eq 0
+       and tinit(ttotIn))
+$ifthen.matching "%RUNTYPE%" == "matching"
+    +
+    (
+      v_shareRenHSinit(hs,reg,typ,vin,ttotIn,ttot)
+      * sum(bs, p_stockHist(q,bs,hs,vin,subs,ttotIn))
+    )$(    lifetimeHsIsFlexible eq 1
+       and tinit(ttotIn))
+$endif.matching
+  )
+;
+
+
+* monotonuous increasing share of replaced initial heating systems
+q_shareRenHSinit(hs,reg,typ,vin,tinit,ttotOut)$(    ord(ttotOut) gt 1
+                                                and vinExists(ttotOut,vin))..
+  v_shareRenHSinit(hs,reg,typ,vin,tinit,ttotOut)
+  =g=
+  v_shareRenHSinit(hs,reg,typ,vin,tinit,ttotOut-1)
+;
+
+* roughly maintain standing stock age across all heating systems
+q_shareRenHSinitTot(reg,typ,vin,ttotOut)$(    lifetimeHsIsFlexible eq 1
+                                          and vinExists(ttotOut,vin))..
+  sum((hs, tinit),
+    v_shareRenHSinit(hs,reg,typ,vin,tinit,ttotOut)
+    * sum((bs,loc,inc),
+      p_stockHist("area",bs,hs,vin,reg,loc,typ,inc,tinit)
+    )
+  )
+  =e=
+  sum((hs, tinit),
+    p_shareRenHSinit("central",hs,reg,typ,vin,tinit,ttotOut)
+    * sum((bs,loc,inc),
+      p_stockHist("area",bs,hs,vin,reg,loc,typ,inc,tinit)
+    )
   )
 ;
 
@@ -820,38 +858,62 @@ q_flowVariation(varFlow,q,subs,t)$(ord(t) gt 1)..
 ;
 
 
-* temporal variations of each flow
+* second order temporal variations of each flow
 
-q_flowVariationCon(q,state,subs,t)$(ord(t) gt 1)..
+q_flowVariationCon(q,state,subs,t)$(ord(t) gt 2)..
   v_flowVariationCon(q,state,subs,t)
   =e=
-  (  v_construction(q,state,subs,t)
-   - v_construction(q,state,subs,t-1))
-  / p_dt(t)
+  (
+    (  v_construction(q,state,subs,t)
+     - v_construction(q,state,subs,t-1))
+    / p_dt(t)
+    -
+    (  v_construction(q,state,subs,t-1)
+     - v_construction(q,state,subs,t-2))
+    / p_dt(t-1)
+  ) / ((p_dt(t) + p_dt(t-1)) / 2)
 ;
 
-q_flowVariationRenBS(q,renAllowedBS,subs,t)$(ord(t) gt 1)..
+q_flowVariationRenBS(q,renAllowedBS,subs,t)$(ord(t) gt 2)..
   v_flowVariationRenBS(q,renAllowedBS,subs,t)
   =e=
-  (  sum(vinExists(t,vin),   v_renovationBS(q,renAllowedBS,vin,subs,t))
-   - sum(vinExists(t-1,vin), v_renovationBS(q,renAllowedBS,vin,subs,t-1)))
-  / p_dt(t)
+  (
+    (  sum(vinExists(t,vin),   v_renovationBS(q,renAllowedBS,vin,subs,t))
+     - sum(vinExists(t-1,vin), v_renovationBS(q,renAllowedBS,vin,subs,t-1)))
+    / p_dt(t)
+    -
+    (  sum(vinExists(t-1,vin), v_renovationBS(q,renAllowedBS,vin,subs,t-1))
+     - sum(vinExists(t-2,vin), v_renovationBS(q,renAllowedBS,vin,subs,t-2)))
+    / p_dt(t-1)
+  ) / ((p_dt(t) + p_dt(t-1)) / 2)
 ;
 
-q_flowVariationRenHS(q,renAllowedHS,subs,t)$(ord(t) gt 1)..
+q_flowVariationRenHS(q,renAllowedHS,subs,t)$(ord(t) gt 2)..
   v_flowVariationRenHS(q,renAllowedHS,subs,t)
   =e=
-  (  sum(vinExists(t,vin),   v_renovationHS(q,renAllowedHS,vin,subs,t))
-   - sum(vinExists(t-1,vin), v_renovationHS(q,renAllowedHS,vin,subs,t-1)))
-  / p_dt(t)
+  (
+    (  sum(vinExists(t,vin),   v_renovationHS(q,renAllowedHS,vin,subs,t))
+     - sum(vinExists(t-1,vin), v_renovationHS(q,renAllowedHS,vin,subs,t-1)))
+    / p_dt(t)
+    -
+    (  sum(vinExists(t-1,vin), v_renovationHS(q,renAllowedHS,vin,subs,t-1))
+     - sum(vinExists(t-2,vin), v_renovationHS(q,renAllowedHS,vin,subs,t-2)))
+    / p_dt(t)
+  ) / ((p_dt(t) + p_dt(t-1)) / 2)
 ;
 
-q_flowVariationDem(q,state,subs,t)$(ord(t) gt 1)..
+q_flowVariationDem(q,state,subs,t)$(ord(t) gt 2)..
   v_flowVariationDem(q,state,subs,t)
   =e=
-  (  sum(vinExists(t,vin),   v_demolition(q,state,vin,subs,t))
-   - sum(vinExists(t-1,vin), v_demolition(q,state,vin,subs,t-1)))
-  / p_dt(t)
+  (
+    (  sum(vinExists(t,vin),   v_demolition(q,state,vin,subs,t))
+     - sum(vinExists(t-1,vin), v_demolition(q,state,vin,subs,t-1)))
+    / p_dt(t)
+    -
+    (  sum(vinExists(t-1,vin), v_demolition(q,state,vin,subs,t-1))
+     - sum(vinExists(t-2,vin), v_demolition(q,state,vin,subs,t-2)))
+    / p_dt(t)
+  ) / ((p_dt(t) + p_dt(t-1)) / 2)
 ;
 
 

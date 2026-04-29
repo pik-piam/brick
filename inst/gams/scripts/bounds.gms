@@ -92,6 +92,10 @@ v_refDeviationVar.fx(ref,refVar,reg,t)$(    sameas(ref, "StatusQuo")
                                         and refVarRef(ref, refVar)) = 0;
 $endif.forceSQ
 
+v_shareRenHSinit.lo(hs,reg,typ,vin,tinit,ttotOut)$vinExists(ttotOut,vin) =
+  p_shareRenHSinit("lower",hs,reg,typ,vin,tinit,ttotOut);
+v_shareRenHSinit.up(hs,reg,typ,vin,tinit,ttotOut)$vinExists(ttotOut,vin) =
+  p_shareRenHSinit("upper",hs,reg,typ,vin,tinit,ttotOut);
 $endif.matching
 
 

@@ -46,7 +46,8 @@ createCalibrationTarget <- function(path,
 
   # build mapping between matching and calibration periods
   .buildPeriodMap <- function(cfgCalib, cfgMatching) {
-    periods <- cfgCalib$calibperiods
+    periods <- cfgCalib$periods
+    periods <- periods[periods <= max(cfgCalib$calibperiods) & periods >= cfgCalib$startyear]
 
     dt <- data.frame(ttotAgg = periods, dt = c(diff(periods)[1], diff(periods)))
 
@@ -99,7 +100,7 @@ createCalibrationTarget <- function(path,
 
 
   .calcMaxDeviation <- function(v, vCorrected, flows, startyear) {
-    lapply(setNames(nm = names(v)), function(var) {
+    lapply(setNames(nm = names(vCorrected)), function(var) {
       inner_join(v[[var]], vCorrected[[var]],
                  by = setdiff(names(v[[var]]), "value"),
                  suffix = c("Uncorrected", "Corrected")) %>%
@@ -116,11 +117,31 @@ createCalibrationTarget <- function(path,
   }
 
 
-  .subsetWithPrev <- function(periods, calibperiods) {
-    from <- min(calibperiods)
+  .subsetWithPrev <- function(periods, calibperiods, startyear) {
+    from <- min(c(calibperiods, startyear))
     to <- max(calibperiods)
     periods <- sort(periods)
     periods[(which(periods == from) - 1):which(periods == to)]
+  }
+
+
+  .proportions <- function(x) {
+    if (all(is.na(x)) || all(x == 0)) x <- rep(1, length(x))
+    proportions(x)
+  }
+
+
+  .writeFile <- function(data, header, outFile) {
+    fileType <- sub("^.*\\.(.+)$", "\\1", outFile)
+    commentChar <- switch(fileType, cs4r = "*", csv = "#")
+    showColNames <- switch(fileType, cs4r = FALSE, csv = TRUE)
+    header <- paste(commentChar, header)
+    writeLines(header, outFile)
+    suppressWarnings( # appending with colnames leads to a warning
+      write.table(data, outFile, append = TRUE, quote = FALSE, sep = ",",
+                  row.names = FALSE, col.names = showColNames)
+    )
+    return(invisible(outFile))
   }
 
 
@@ -159,6 +180,11 @@ createCalibrationTarget <- function(path,
   v <- lapply(vars, readSymbol, x = matchingGdx, selectArea = FALSE)
 
 
+  ## renovation share ====
+
+  shareRenHSinit <- read.csv(file.path(path, "f_shareRenHSinit.csv"))
+
+
 
   # AGGREGATION ----------------------------------------------------------------
 
@@ -179,14 +205,21 @@ createCalibrationTarget <- function(path,
 
   ## spatial ====
 
+  v[["shareRenHSinit"]] <- v[["stock"]] %>%
+    group_by(across(all_of(c("hs", "region", "typ", "vin", ttotIn = "ttot")))) %>%
+    summarise(weight = sum(.data$value), .groups = "drop") %>%
+    left_join(x = shareRenHSinit, by = c("hs", "region", "typ", "vin", "ttotIn"))
+
   v <- lapply(v, function(x) {
     x %>%
       right_join(regionMap, by = "region") %>%
-      group_by(across(-all_of(c("region", "value")))) %>%
-      summarise(value = round(sum(.data$value), digits)) %>%
+      group_by(across(-any_of(c("region", "value", "weight")))) %>%
+      summarise(value = if ("weight" %in% names(x)) sum(.data$value * .proportions(.data$weight)) else sum(.data$value),
+                value = round(.data$value, digits)) %>%
       rename(region = "regionAgg") %>%
-      select(all_of(names(x))) # reorder columns
+      select(all_of(setdiff(names(x), "weight"))) # reorder columns
   })
+
 
 
   # WRITE UNCORRECTED FILES ----------------------------------------------------
@@ -216,7 +249,7 @@ createCalibrationTarget <- function(path,
   cfg[["switches"]][["CALIBRATIONMETHOD"]] <- NULL
   cfg[["title"]] <- paste(basename(path), "for", basename(calibConfig), sep = "_")
   cfg[["matchingRun"]] <- normalizePath(path)
-  cfg[["periods"]] <- .subsetWithPrev(cfgCalib$periods, cfgCalib$calibperiods)
+  cfg[["periods"]] <- .subsetWithPrev(cfgCalib$periods, cfgCalib$calibperiods, cfgCalib$startyear)
   cfg[["boilerBan"]] <- cfgMatching[["boilerBan"]]
 
   runPath <- initModel(config = cfg,
@@ -241,16 +274,15 @@ createCalibrationTarget <- function(path,
   calibConfig <- attr(cfgCalib, "file")
 
   # write files into aggregation subfolder
-  header <- c(paste0("* matching run: ", path),
-              paste0("* calibration config: ", calibConfig),
-              paste0("* correction run", if (rmCorrectionRun) " (deleted)", ": ", runPath))
+  header <- c(paste0("matching run: ", path),
+              paste0("calibration config: ", calibConfig),
+              paste0("correction run", if (rmCorrectionRun) " (deleted)", ": ", runPath))
   outFiles <- lapply(names(vCorrected), function(var) {
     outFile <- file.path(runPath, paste0("f_", var, "CalibTarget.cs4r"))
-    writeLines(header, outFile)
-    write.table(vCorrected[[var]], outFile, append = TRUE, quote = FALSE, sep = ",",
-                row.names = FALSE, col.names = FALSE)
-    outFile
+    .writeFile(vCorrected[[var]], header, outFile)
   })
+  outFiles$shareRenHSinit <- .writeFile(v$shareRenHSinit, header, file.path(runPath, "shareRenHSinit.csv"))
+
 
   # copy files to given directory
   if (!is.null(outDir)) {

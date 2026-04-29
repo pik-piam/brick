@@ -125,7 +125,8 @@ matchingRun: NULL
 
 ### calibration run ###
 # path to calibration run
-# intangible costs and initial stock are taken from this run
+# intangible costs and initial stock and renovation share for heating systems
+#  are taken from this run
 # If set, assumption files defined in the config are ignored
 calibrationRun: NULL
 
@@ -158,8 +159,9 @@ fsScenario: SSP2
 # named list of a data.frame with last period of allowed installation as value
 # allowed column names: var, region, ttot, hs
 # mandatory column name: value
+# avoid duplicated declaration by grouping items with .
   # e.g. var:   [renovation, renovation, construction]
-  #      hs:    [      sobo,       libo,         libo]
+  #      hs:    [ sobo.biom,       libo,         libo]
   #      value: [      2025,       2030,         2035]
 boilerBan: []
 
