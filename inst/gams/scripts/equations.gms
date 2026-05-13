@@ -666,11 +666,14 @@ $endif.matching
 
 
 * monotonuous increasing share of replaced initial heating systems
+* with minimum slope
 q_shareRenHSinit(hs,reg,typ,vin,tinit,ttotOut)$(    ord(ttotOut) gt 1
                                                 and vinExists(ttotOut,vin))..
-  v_shareRenHSinit(hs,reg,typ,vin,tinit,ttotOut)
+    v_shareRenHSinit(hs,reg,typ,vin,tinit,ttotOut)
+  - v_shareRenHSinit(hs,reg,typ,vin,tinit,ttotOut-1)
   =g=
-  v_shareRenHSinit(hs,reg,typ,vin,tinit,ttotOut-1)
+  0.2 * (  p_shareRenHSinit("central",hs,reg,typ,vin,tinit,ttotOut)
+         - p_shareRenHSinit("central",hs,reg,typ,vin,tinit,ttotOut-1))
 ;
 
 * roughly maintain standing stock age across all heating systems
