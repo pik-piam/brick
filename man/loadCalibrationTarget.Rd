@@ -4,13 +4,14 @@
 \alias{loadCalibrationTarget}
 \title{Load calibration targets from matching results}
 \usage{
-loadCalibrationTarget(config)
+loadCalibrationTarget(config, inputDir, path)
 }
 \arguments{
 \item{config}{named list with run configuration}
-}
-\value{
-directory of input folder
+
+\item{inputDir}{directory of input folder}
+
+\item{path}{character, path to the run}
 }
 \description{
 Load calibration targets from matching results

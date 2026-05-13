@@ -10,19 +10,24 @@ computeShareRen(
   cutOffShare = 1,
   standingLifeTime = FALSE,
   timePeriods = NULL,
-  vintages = NULL
+  vintages = NULL,
+  levels = "central"
 )
 }
 \arguments{
 \item{params}{data frame with parameters of the Weibull distribution}
 
-\item{m}{Gams container with at least \code{ttotIn}, \code{ttotOut}, \code{tinit} and \code{p_dt}}
+\item{m}{Gams container with at least \code{ttotIn}, \code{ttotOut},
+\code{tinit} and \code{p_dt}}
 
-\item{cutOffShare}{numeric, renovation share at which we cut off the distribution function by jumping to 1}
+\item{cutOffShare}{numeric, renovation share at which we cut off the
+distribution function by jumping to 1}
 
-\item{standingLifeTime}{logical, whether standing lifetime needs to be considered}
+\item{standingLifeTime}{logical, whether standing lifetime needs to be
+considered}
 
-\item{timePeriods}{data frame with time periods for which the calculations should be done}
+\item{timePeriods}{data frame with time periods for which the calculations
+should be done}
 
 \item{vintages}{data frame with vintages and their starting and end year}
 }
@@ -35,12 +40,9 @@ given time steps assuming a Weibull distribution of the technology life time.
 }
 \details{
 If \code{standingLifeTime = TRUE}, a standing stock is considered.
-For most technologies we assume a constant inflow between the start of the
-respective vintage cohort and initial time.
-For the more recent technology of heat pumps (\code{ehp1}), we assume that
-the inflow decreases quadratically with the age of the system going back from
-initial time to the start of the vintage cohort, but at most 25 years.
-For the rather outdated technologies solids (\code{sobo}) and liquids (\code{libo}) boilers,
-we assume that the inlow increases quadratically with the age of the system going back from
-initial time to the start of the vintage cohort, but at most 25 (\code{sobo}) or 20 (\code{libo}) years.
+We differentiate 3 levels assuming either increasing, constant or decreasing
+temporal profile of the installations that built to the standing stock. We
+assume installations changed quadratically with the age of the system going
+back from the initial time step to the start of the vintage cohort, but at
+most 25 years.
 }
