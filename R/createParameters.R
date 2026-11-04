@@ -255,16 +255,16 @@ createParameters <- function(m, config, inputDir) {
 
   ### useful energy demand for space heating ####
   p_ueDemand <- readInput("f_ueDemand.cs4r",
-                          c("region", "typ", "vin", "bs", "value"),
+                          c("region", "typ", "vin", "enduse", "bs", "value"),
                           inputDir) %>%
-    select("bs", "vin", "region", "typ", "value") %>%
+    select("enduse", "bs", "vin", "region", "typ", "value") %>%
     toModelResolution(m)
   if (isTRUE(config[["identVinCharact"]])) {
     p_ueDemand <- .makeIdentVin(p_ueDemand)
   }
   p_ueDemand <- m$addParameter(
     name = "p_ueDemand",
-    domain = c("bs", "vin", "region", "typ"),
+    domain = c("enduse", "bs", "vin", "region", "typ"),
     records = p_ueDemand,
     description = "floor-space specific useful energy demand for space heating in kWh/yr/m2"
   )
@@ -295,7 +295,7 @@ createParameters <- function(m, config, inputDir) {
   # Life time ------------------------------------------------------------------
 
   # cut off Weibull above this value and assume 1 for technology life time
-  cutOffShare <- 0.95
+  cutOffShare <- 1
 
   # read Weibull life time parameters
   lt   <- readInput("f_lifetimeBuilding.cs4r",      c("region", "typ", "variable"),       inputDir)
@@ -752,7 +752,8 @@ createParameters <- function(m, config, inputDir) {
 
 #' Freeze Parameters
 #'
-#' Select parameters and freeze them to the value in a selected period
+#' Select parameters and freeze them to the value in a selected period or the
+#' closest period that exists
 #'
 #' @param m gamstransfer Container with parameters
 #' @param params character vector of parameter names
@@ -775,7 +776,10 @@ createParameters <- function(m, config, inputDir) {
     }
     records <- param$records %>%
       group_by(across(-all_of(c("ttot", "value")))) %>%
-      mutate(value = .data$value[.asNumeric(.data$ttot) == period]) %>%
+      mutate(value = ifelse(
+        is.na(.data$value),
+        NA,
+        .data$value[which.min(abs(.asNumeric(.data$ttot) - period))])) %>%
       ungroup()
     param$setRecords(records)
   }

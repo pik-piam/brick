@@ -57,19 +57,8 @@ computeShareRen <- function(params, m,
   .probXleqY <- function(shift, shape, scale, hs, maxAge) {
 
     # Set function to integrate over as the density of Y multiplied with the Weibull distribution function
-    if (hs == "ehp1") {
-      func <- .decreasingBeta
-      distrLength <- min(25, maxAge)
-    } else if (hs %in% c("libo", "sobo")) {
-      func <- .increasingBeta
-      distrLength <- min(25, maxAge)
-    } else if (hs == "libo") {
-      func <- .increasingBeta
-      distrLength <- min(20, maxAge)
-    } else {
-      func <- .shiftedPweibull
-      distrLength <- maxAge
-    }
+    func <- .shiftedPweibull
+    distrLength <- maxAge
 
     # Numerically integrate over the density function
     res <- stats::integrate(
@@ -140,6 +129,14 @@ computeShareRen <- function(params, m,
       ungroup()
   } else {
 
+    .pWeibullSegment <- function(ttotIn, ttotOut, dt, shape, scale) {
+      lower = ttotOut - ttotIn
+      upper = ttotOut - (ttotIn - dt)
+      res <- stats::integrate(f = pweibull, lower = lower, upper = upper,
+                              shape = shape, scale = scale)
+      res$value / dt
+    }
+
 
     # for renovations/construction ====
 
@@ -149,9 +146,13 @@ computeShareRen <- function(params, m,
                   rename(dt = "value"),
                 by = c(ttotIn = "ttot")) %>%
       filter(!is.na(.data$dt)) %>%
-      mutate(lt = .data$ttotOut - (.data$ttotIn - .data$dt / 2),
-             p0 = 0,
-             p  = pweibull(.data$lt, .data$shape, .data$scale))
+      mutate(p0 = 0,
+             p = unlist(Map(.pWeibullSegment,
+                            ttotIn = .data$ttotIn,
+                            ttotOut = .data$ttotOut,
+                            dt = .data$dt,
+                            shape = .data$shape,
+                            scale = .data$scale)))
   }
 
   share %>%

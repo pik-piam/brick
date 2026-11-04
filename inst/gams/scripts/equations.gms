@@ -34,8 +34,9 @@ q_sysCost(subs,t)..
   =e=
     v_conCost(subs,t)
   + v_renCost(subs,t)
-  + v_opeCost(subs,t)
+  + sum(enduse, v_opeCost(enduse,subs,t))
   + v_demCost(subs,t)
+  + v_adjCost(subs,t)
 ;
 
 q_sysHeteroPref(subs,t)..
@@ -187,14 +188,14 @@ q_specCostRen(cost, bs, hs, bsr, hsr, vin, subs, t)$(    renAllowed(bs,hs,bsr,hs
 * we assume a linear transition from the previous to the current stock and
 * therefore take the average stock between the two for the operation cost
 
-q_opeCost(subs(reg,loc,typ,inc),ttot)$(t(ttot))..
-  v_opeCost(subs,ttot)
+q_opeCost(enduse,subs(reg,loc,typ,inc),ttot)$(t(ttot))..
+  v_opeCost(enduse,subs,ttot)
   =e=
   sum((state,vinExists(ttot,vin)),
     sum(ttot2$((sameas(ttot2,ttot) or sameas(ttot2,ttot-1)) and vinExists(ttot2,vin)),
       v_stock("area",state,vin,subs,ttot2)
     ) / 2
-    * p_specCostOpe(state,vin,reg,loc,typ,ttot)
+    * p_specCostOpe(enduse,state,vin,reg,loc,typ,ttot)
   )
 ;
 
@@ -210,6 +211,45 @@ q_demCost(subs,t)..
     v_demolition("area",state,vin,subs,t)
     * p_specCostDem
   ))
+;
+
+
+*** adjustment cost ------------------------------------------------------------
+
+* cost on temporal variations in the installations of heating systems
+
+q_adjCost(subs,t)$(ord(t) gt 1)..
+  v_adjCost(subs,t)
+  =e=
+  v_adjCostHS(subs,t)
+;
+
+q_adjCostHS(subs,t)$(ord(t) gt 1)..
+  v_adjCostHS(subs,t)
+  =e=
+  sum(hs,
+    !! estimation of installation cost
+    !! TODO: replace this once we have more cost components
+    smin((state,vin)$p_specCostRenHS("tangible",state,hs,vin,subs,t),
+      p_specCostRenHS("tangible",state,hs,vin,subs,t)
+    ) 
+    * %ADJCOSTFACTOR%
+    * sqr(
+      v_instVariationHS(hs,subs,t)
+      / (sum((bs,vinExists(tinit,vin)), v_stock("area",bs,hs,vin,subs,tinit)) + epsilon)
+    )
+  )
+;
+
+q_instVariationHS(hs,subs,t)$(ord(t) gt 1)..
+  v_instVariationHS(hs,subs,t)
+  =e=
+  (
+      sum(bs, v_construction("area",bs,hs,subs,t))
+    - sum(bs, v_construction("area",bs,hs,subs,t-1))
+    + sum((renAllowedHS(state,hs),vinExists(t,vin)), v_renovationHS("area",state,hs,vin,subs,t))
+    - sum((renAllowedHS(state,hs),vinExists(t-1,vin)), v_renovationHS("area",state,hs,vin,subs,t-1))
+  ) / p_dt(t)
 ;
 
 
