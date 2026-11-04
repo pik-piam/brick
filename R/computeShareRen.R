@@ -140,6 +140,14 @@ computeShareRen <- function(params, m,
       ungroup()
   } else {
 
+    .pWeibullSegment <- function(ttotIn, ttotOut, dt, shape, scale) {
+      lower = ttotOut - ttotIn
+      upper = ttotOut - (ttotIn - dt)
+      res <- stats::integrate(f = pweibull, lower = lower, upper = upper,
+                              shape = shape, scale = scale)
+      res$value / dt
+    }
+
 
     # for renovations/construction ====
 
@@ -149,9 +157,13 @@ computeShareRen <- function(params, m,
                   rename(dt = "value"),
                 by = c(ttotIn = "ttot")) %>%
       filter(!is.na(.data$dt)) %>%
-      mutate(lt = .data$ttotOut - (.data$ttotIn - .data$dt / 2),
-             p0 = 0,
-             p  = pweibull(.data$lt, .data$shape, .data$scale))
+      mutate(p0 = 0,
+             p = unlist(Map(.pWeibullSegment,
+                            ttotIn = .data$ttotIn,
+                            ttotOut = .data$ttotOut,
+                            dt = .data$dt,
+                            shape = .data$shape,
+                            scale = .data$scale)))
   }
 
   share %>%
